@@ -1,0 +1,8 @@
+{
+    "semi": false,
+    "singleQuote": false,
+    "endOfLine": "auto",
+    "htmlWhitespaceSensitivity": "ignore",
+    "trailingComma": "none",
+    "disableLanguages": ["vue"]
+}

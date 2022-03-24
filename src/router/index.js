@@ -1,27 +1,21 @@
-import {
-  createRouter,
-  createWebHashHistory
-} from 'vue-router'
-import Home from '../views/Home.vue'
+import { createRouter, createWebHashHistory } from "vue-router"
+import { pendingRequest } from "../frame/utils/http"
+import dashboard from "../pages/dashboard/index.vue"
 
 const routes = [
-
   {
-    path: "*", // 其他没有的页面都重定向到 home页面去
-    redirect: "../../"
+    path: "/",
+    name: "dashboard",
+    component: dashboard
   },
   {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
+    path: "/LAN",
+    name: "LAN",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import( /* webpackChunkName: "about" */ '../views/About.vue')
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../pages/LAN/index")
   }
 ]
 
@@ -30,6 +24,13 @@ const router = createRouter({
   routes
 })
 
-
+router.beforeEach((to, from, next) => {
+  // 把上个页面还没结束的请求取消掉
+  pendingRequest.forEach((item) => {
+    item.routeChangeCancel && item.cancel()
+  })
+  // ... 其他处理
+  next()
+})
 
 export default router
