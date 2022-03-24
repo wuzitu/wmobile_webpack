@@ -1,5 +1,5 @@
 module.exports = {
-  outputDir: '../wmobile',
+  // outputDir: '../wmobile',
   publicPath: process.env.NODE_ENV === 'production' ?
     '/web/mobile' : './',
   filenameHashing: false, // 想要去除生成文件的hash 值，置为false
