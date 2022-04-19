@@ -1,0 +1,46 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": ["eslint:recommended", "plugin:vue/essential"],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly",
+        "require": "readonly",
+        "process": "readonly",
+        "Frame": "readonly",
+        "defineProps": "readonly",
+        "defineEmits": "readonly",
+        "defineExpose": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "parser": "babel-eslint"
+    },
+    "plugins": ["vue"],
+    "rules": {
+        "no-var": 2,
+        "no-const-assign": 2,
+        "vue/no-multiple-template-root": "off",
+        "vue/no-v-model-argument": "off",
+        "no-multi-spaces": 2,
+        "space-infix-ops": 2,
+        "space-in-parens": [2, "never"],
+        "func-call-spacing": 2,
+        "no-trailing-spaces": 2,
+        "no-multiple-empty-lines": [2, { "max": 2, "maxEOF": 1, "maxBOF": 1 }],
+        "object-curly-spacing": [2, "always"],
+        "switch-colon-spacing": 2,
+        "no-shadow": 2,
+        "indent": [2, 4, { "SwitchCase": 1 }],
+        "no-nested-ternary": 2,
+        "arrow-spacing": 2,
+        "quotes": [2, "double"],
+        "no-duplicate-imports": 2,
+        "no-duplicate-case": 2,
+        "semi": [2, "never"],
+        "camelcase": 2
+    }
+}
