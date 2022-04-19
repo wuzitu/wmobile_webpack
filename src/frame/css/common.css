@@ -1,0 +1,9 @@
+/* @import "./font.css"; */
+
+body {
+  font-family: "HPSimplified", Avenir, Helvetica, Arial, sans-serif,
+    "Microsoft YaHei";
+  overflow: scroll;
+  overflow-x: hidden;
+  height: 100%;
+}
