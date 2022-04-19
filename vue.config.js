@@ -2,7 +2,7 @@ const path = require("path")
 const resolve = (dir) => path.join(__dirname, dir)
 
 module.exports = {
-    outputDir: "../wmobile",
+    // outputDir: "../wmobile",
     publicPath: process.env.NODE_ENV === "production" ? "./" : "./",
     filenameHashing: false, // 想要去除生成文件的hash 值，置为false
     lintOnSave: false, // eslint-loader 是否在保存的时候检查
