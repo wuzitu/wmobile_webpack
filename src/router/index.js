@@ -47,11 +47,16 @@ const routes = [
         name: "Vlan",
         component: () => import("../pages/Vlan/Index")
     },
+    {
+        path: "/AddVlan",
+        name: "AddVlan",
+        component: () => import("../pages/Vlan/AddVlan")
+    },
     // 设备模块
     {
         path: "/AP",
         name: "AP",
-        component: () => import(/* webpackChunkName: "about" */ "../pages/AP/Index")
+        component: () => import("../pages/AP/Index")
     },
     {
         path: "/DevInfo/:devType/:devName",

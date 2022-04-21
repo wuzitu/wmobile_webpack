@@ -1,22 +1,22 @@
 <template>
-<van-config-provider :theme-vars="themeVars">
-    <div class="vlanHeader">
-      <span>{{ t("DevInfo.vlanlist") }}</span>
-      <van-Search class="searchStyle" v-model="value" left-icon="none" :placeholder="t('DevInfo.pleaseinputvlan')" />
-      <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
-    </div>
-
-    <div class="vlanCardWrap" v-for="(vlanInfoListItem, index) in vlanInfoList" :key="'vlan' + index">
-        <vlan-list :vlanData="vlanInfoListItem" />
-    </div>
-
-    <router-link to="/AddVLAN" >
-        <div class="add-vlan">
-            <svg-icon icon-class="ic_addvlan" class="add-vlan-icon"></svg-icon>
-            <span class="add-vlan-title">{{ t('DevInfo.addvlan') }}</span>
+    <van-config-provider :theme-vars="themeVars">
+        <div class="vlanHeader">
+            <span>{{ t("DevInfo.vlanlist") }}</span>
+            <van-Search class="searchStyle" v-model="value" left-icon="none" :placeholder="t('DevInfo.pleaseinputvlan')" />
+            <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
         </div>
-    </router-link>
- </van-config-provider>
+
+        <div class="vlanCardWrap" v-for="(vlanInfoListItem, index) in vlanInfoList" :key="'vlan' + index">
+            <vlan-list :vlanData="vlanInfoListItem" />
+        </div>
+
+        <router-link to="/AddVLAN">
+            <div class="add-vlan">
+                <svg-icon icon-class="ic_addvlan" class="add-vlan-icon"></svg-icon>
+                <span class="add-vlan-title">{{ t("DevInfo.addvlan") }}</span>
+            </div>
+        </router-link>
+    </van-config-provider>
 </template>
 
 <script setup>
@@ -54,10 +54,9 @@ const intelligentOptimization = (value) => {
     const status = value ? t("Wireless.open") : t("Wireless.close")
     Toast.success(status)
 }
+</script>
 
-</script >
-
-<style scope>
+<style scoped>
 .vlanHeader {
     padding-right: 10px;
     background: #ffffff;
@@ -97,19 +96,18 @@ const intelligentOptimization = (value) => {
     padding: 0 15px;
 }
 
-
 .rightIcon {
     width: 12px;
     height: 12px;
     vertical-align: middle;
 }
 
-.add-vlan-icon{
+.add-vlan-icon {
     width: 16px;
     height: 16px;
     vertical-align: middle;
 }
-.vlan-list{
+.vlan-list {
     margin-top: 10px;
 }
 
@@ -119,7 +117,7 @@ const intelligentOptimization = (value) => {
     padding: 0 15px;
 }
 
-.vlan-describe{
+.vlan-describe {
     width: 344px;
     height: 33px;
     font-size: 13px;
@@ -136,7 +134,7 @@ const intelligentOptimization = (value) => {
     padding-right: 10px;
     color: #666666;
 }
-.add-vlan{
+.add-vlan {
     width: 100px;
     height: 30px;
     margin: 0 auto;
@@ -144,11 +142,11 @@ const intelligentOptimization = (value) => {
     text-align: center;
     line-height: 30px;
 }
-.add-vlan-title{
+.add-vlan-title {
     font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
-    color: #F43E3B;
+    color: #f43e3b;
     padding-left: 9px;
 }
 </style>

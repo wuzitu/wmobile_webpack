@@ -34,14 +34,19 @@
         "english": "English"
     },
     "DashBoard": {
-        "topology": "拓扑图",
-        "map": "图表"
+        "topology": "拓扑",
+        "map": "图表",
+        "switch":"交换机",
+        "online":"在线数",
+        "offline":"离线数",
+        "couldupdate":"可升级"
     },
     "Password": {
         "account": "账号",
         "title1": "设置管理员密码",
         "password": "密码",
         "passwordTips": "密码提示",
+        "passwordLength": "请输入8-63位Wi-Fi密码",
         "placeholder1": "请输入管理员密码",
         "placeholder2": "请输入密码的提示信息",
         "rules": "密码长度为10~63位，至少包括大写字母、小写字母、数字、符号中的两种，不能包含顺序或反序的admin",
@@ -62,7 +67,8 @@
         "DNSAddress": "DNS地址",
         "assignmentStart": "分配起始地址",
         "assignmentTotal": "分配地址数",
-        "onlineCfg": "上网配置"
+        "onlineCfg": "上网配置",
+        "maxDnsTips": "最多创建6条DNS"
     },
     "Wireless": {
         "title1": "设置Wi-Fi",
@@ -102,7 +108,21 @@
         "delVlanTitle": "删除VLAN ID",
         "delVlanCancel": "已取消",
         "delVlanSuccess": "已删除",
-        "addVlan": "新增VLAN"
+        "addVlan": "新增VLAN",
+        "addGloVlan":"新增全局VLAN",
+        "gateway":"网关地址",
+        "addressMask":"地址掩码",
+        "lease":"租约",
+        "selectWifi":"选择Wi-Fi",
+        "plsInputVlanId":"请输入VLAN ID",
+        "pslInputRemarks":"请输入VLAN备注",
+        "defaultLease":"0天0时0分0秒",
+        "notInvolved":"--不涉及--",
+        "selectDevice":"生效设备与端口选择",
+        "model":"型号",
+        "sn":"序列号",
+        "initVlanTips": "请输入VLAN ID（1-4094）",
+        "initVlanRemark": "请输入VLAN备注"
     },
     "Switch": {
         "title": "交换机列表",
@@ -126,8 +146,8 @@
         "searchByAP":"按AP查看",
         "legend1":"负载率",
         "legend2":"干扰率",
-        "legend3":"重传率", 
-        "legend4":"误码率", 
+        "legend3":"重传率",
+        "legend4":"误码率",
         "legend5":"信道利用率",
         "before":"调整前",
         "after":"调整后"
@@ -186,7 +206,9 @@
         "poeinfotitle":"PoE信息",
         "portflowtend":"端口流量趋势",
         "vlanlist":"VLAN 列表",
-        "pleaseinputvlan":"请输入VLAN ID (1-4094)"
+        "pleaseinputvlan":"请输入VLAN ID (1-4094)",
+        "upflow":"上行流量",
+        "downflow":"下行流量"
     }, 
     "Terminal": { 
         "allAP": "终端总数：",

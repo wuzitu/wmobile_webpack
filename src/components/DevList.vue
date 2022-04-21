@@ -1,22 +1,23 @@
 <template>
   <div class="height100">
-    <van-sticky :offset-top="38" z-index="0">
+    <van-sticky :offset-top="38" z-index="1">
       <div class="deviceHeader">
         <span>设备列表</span>
         <Search class="searchStyle" v-model="value" left-icon="none" placeholder="请输入设备名称或型号" />
         <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
       </div>
-      <div class="dev-block">
-        <Tabs v-model:active="active" swipeable color="#617CF0">
-          <Tab v-for="(item, index) in cardMenu" :title="item.title" :key="'menu' + index">
-            <div class="deviceCardWrap" v-for="(card, index) in cardList" :key="'haha' + index">
-              <Checkbox checked-color="#617CF0" class="singleCheck" v-model="card.isCheak"></Checkbox>
-              <device-card :cardData="card" />
-            </div>
-          </Tab>
-        </Tabs>
-      </div>
+
     </van-sticky>
+    <div class="dev-block">
+      <Tabs v-model:active="active" swipeable color="#617CF0" sticky offset-top="80">
+        <Tab v-for="(item, index) in cardMenu" :title="item.title" :key="'menu' + index">
+          <div class="deviceCardWrap" v-for="(card, index) in cardList" :key="'haha' + index">
+            <Checkbox checked-color="#617CF0" class="singleCheck" v-model="card.isCheak"></Checkbox>
+            <device-card :cardData="card" />
+          </div>
+        </Tab>
+      </Tabs>
+    </div>
     <div class="deviceBottom">
       <Checkbox v-model="checked" class="deviceCheck">全选</Checkbox>
       <Popover v-model:show="showPopover" placement="top-end" theme="dark" :actions="actions">

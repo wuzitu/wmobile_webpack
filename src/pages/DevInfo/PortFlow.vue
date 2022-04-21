@@ -6,6 +6,7 @@
                     <svg-icon class="ic_arrow" icon-class="ic_arrow"></svg-icon>
             </div>
        </box-title>
+       <flow-chart class="flow-chart"></flow-chart>
     </div>
 </template>
 
@@ -15,6 +16,7 @@ import { useRouter } from "vue-router"
 import { useI18n } from "vue-i18n"
 import BoxTitle from "@/components/BoxTitle"
 import SvgIcon from "@/components/SvgIcon"
+import FlowChart from "./FlowChart.vue"
 
 const { t } = useI18n()
 
@@ -27,6 +29,7 @@ const propsData = defineProps({ portIndex: String })
    .port-flow {
        width: 375px;
        height: 308px;
+       background-color: #FFFFFF;
    }
 
    .right-btn {
@@ -48,5 +51,8 @@ const propsData = defineProps({ portIndex: String })
        width: 12px;
        height: 12px;
        display: inline-block;
+   }
+   .flow-chart {
+       background-color: #FFFFFF;
    }
 </style>

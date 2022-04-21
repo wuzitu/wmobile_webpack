@@ -85,6 +85,30 @@
         "wifiPwdPlaceholder": "请输入8-63位Wi-Fi密码",
         "hide": "隐藏"
     },
+    "Vlan":{
+        "vlanListTitle": "VLAN 列表",
+        "describe":"此处配置的VLAN为全局VLAN，在全网所有设备都生效，如需配置特定设备的VLAN，请在设备页面配置。",
+        "remarks":"备注",
+        "ip":"IP地址",
+        "addressAssignment":"地址分配",
+        "delVlanMessage": "该VlAN ID如果被删除，则当前连接会断开，请谨慎删除，请确认",
+        "delVlanTitle": "删除VLAN ID",
+        "delVlanCancel": "已取消",
+        "delVlanSuccess": "已删除",
+        "addVlan": "新增VLAN",
+        "addGloVlan":"新增全局VLAN",
+        "gateway":"网关地址",
+        "addressMask":"地址掩码",
+        "lease":"租约",
+        "selectWifi":"选择Wi-Fi",
+        "plsInputVlanId":"请输入VLAN ID",
+        "pslInputRemarks":"请输入VLAN备注",
+        "defaultLease":"0天0时0分0秒",
+        "notInvolved":"--不涉及--",
+        "selectDevice":"生效设备与端口选择",
+        "model":"型号",
+        "sn":"序列号"
+    },
     "Switch": {
         "title": "交换机列表",
         "all": "全部:",
@@ -167,6 +191,8 @@
         "poeinfotitle":"PoE信息",
         "portflowtend":"端口流量趋势",
         "vlanlist":"VLAN 列表",
-        "pleaseinputvlan":"请输入VLAN ID (1-4094)"
+        "pleaseinputvlan":"请输入VLAN ID (1-4094)",
+        "upflow":"上行流量",
+        "downflow":"下行流量"
     }
 }

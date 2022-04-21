@@ -1,5 +1,5 @@
 <template>
-    <van-config-provider :theme-vars="themeVars"> 
+    <van-config-provider :theme-vars="themeVars">
         <div>
             <div class="apCount">
                 <div v-for="item in apStatistics" :key="item.class" class="count">
@@ -18,8 +18,8 @@
             <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
         </div>
 
-        <div style="background-color: #ffffff">
-            <van-tabs v-model:active="activeTab" style="padding-top: 24px" type="card" color="#617CF0" title-inactive-color="#333333" line-width="10px">
+        <div style="background-color: #ffffff;">
+            <van-tabs v-model:active="activeTab" style="padding-top: 24px;" type="card" color="#617CF0" title-inactive-color="#333333" line-width="10px">
                 <van-tab title="按接入Wi-Fi查看">
                     <!-- 终端列表折叠面板 -->
                     <van-collapse v-model="activeNames" class="terminalList">
@@ -197,7 +197,7 @@ let activeNames = ref([wifiData[0].name])
 const themeVars = {}
 </script>
 
-<style scope>
+<style scoped>
 .wifiHeader {
     padding-right: 10px;
     background: #ffffff;

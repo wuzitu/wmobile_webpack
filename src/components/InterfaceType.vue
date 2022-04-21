@@ -1,7 +1,7 @@
 <template>
     <!-- 上网口 -->
     <div class="config-box">
-        <p class="config-title">{{ t("Network.interfaceWan") }}</p>
+        <slot name="interface-title"></slot>
         <select-picker
             :selected="selectedInterface"
             :columns="props.interfaceList"
@@ -17,20 +17,53 @@
             @changeSelected="userType"
         ></select-picker>
         <div class="type-config type-dhcp" v-if="selectedType == typeList[0]">{{ t("Network.dhcpTips") }}</div>
-        <div class="type-config" v-else-if="selectedType == typeList[1]">
+        <div class="type-config type-pppoe" v-else-if="selectedType == typeList[1]">
             <field
                 v-model="userName"
                 :label="t('Password.account')"
                 :border="false"
+                placeholder="account"
                 required
             ></field>
-            <field v-model="password" :label="t('Password.password')" :border="false" required></field>
+            <password-field
+                :password="password"
+                :label="t('Password.password')"
+                :border="false"
+                placeholder="password"
+                @changePassword="pppoePassword"
+            ></password-field>
         </div>
-        <div class="type-config" v-else>
-            <field v-model="IPv4Address" :label="t('Network.IPAddress')" placeholder="192.168.1.1" required></field>
-            <field v-model="netmask" :label="t('Network.subnetMask1')" placeholder="255.255.255.0" required></field>
-            <field v-model="gateway" :label="t('Network.gatewayAddress')" placeholder="192.168.0.100" required></field>
-            <field :label="t('Network.DNSAddress')" placeholder="8.8.8.8" required></field>
+        <div class="type-config type-static" v-else>
+            <field
+                v-model="IPv4Address"
+                :label="t('Network.IPAddress')"
+                :border="false"
+                placeholder="192.168.1.1"
+                required
+            ></field>
+            <field
+                v-model="netmask"
+                :label="t('Network.subnetMask1')"
+                :border="false"
+                placeholder="255.255.255.0"
+                required
+            ></field>
+            <field
+                v-model="gateway"
+                :label="t('Network.gatewayAddress')"
+                :border="false"
+                placeholder="192.168.0.100"
+                required
+            ></field>
+            <multi-input
+                ref="multiDns"
+                :label="t('Network.DNSAddress')"
+                :dataList="dnsList"
+                placeholder="8.8.8.8"
+                :maxCount="6"
+                :maxToast="t('Network.maxDnsTips').replace(/\d/, props.maxDns)"
+                :border="false"
+            ></multi-input>
         </div>
     </div>
 </template>
@@ -40,14 +73,16 @@ import { ref } from "vue"
 import { useI18n } from "vue-i18n"
 import { Field } from "vant"
 import SelectPicker from "./SelectPicker"
+import PasswordField from "./PasswordField"
+import MultiInput from "./MultiInput"
 const { t } = useI18n()
-const typeList = ["DHCP", "PPPoE", t("Network.staticNet")]
+const typeList = ref(["DHCP", "PPPoE", t("Network.staticNet")])
 const userName = ref("")
-const password = ref("")
+const password = ref("123")
 const IPv4Address = ref("")
 const netmask = ref("")
 const gateway = ref("")
-const dnsList = ref([])
+const dnsList = ref([""])
 
 const props = defineProps({
     selectedInterface: {
@@ -55,6 +90,10 @@ const props = defineProps({
         default: ""
     },
     interfaceList: {
+        type: Array,
+        default: () => []
+    },
+    typeList: {
         type: Array,
         default: () => []
     },
@@ -71,11 +110,17 @@ const props = defineProps({
                 IPv4Address: "",
                 netmask: "",
                 gateway: "",
-                dnsList: []
+                dnsList: [""]
             }
         }
+    },
+    maxDns: {
+        type: Number,
+        default: 0
     }
 })
+
+typeList.value = props.typeList == [] ? typeList.value : typeList.value
 
 if (props.selectedType == "PPPoE") {
     userName.value = props.selectedCfg.userName
@@ -98,6 +143,15 @@ const userType = (e) => {
     selectedType.value = e
 }
 
+const pppoePassword = (e) => {
+    password.value = e
+}
+
+const multiDns = ref()
+const getDns = () => {
+    return multiDns.value.returnData()
+}
+
 const returnData = () => {
     const data = {
         interface: selectedInterface,
@@ -112,7 +166,7 @@ const returnData = () => {
         data.config.IPv4Address = IPv4Address
         data.config.netmask = netmask
         data.config.gateway = gateway
-        data.config.dnsList = []
+        data.config.dnsList = getDns()
     }
 
     return data
@@ -125,29 +179,44 @@ defineExpose({
 </script>
 
 <style scoped>
-    .init-network .type-config {
+    .type-config {
         padding: 10px 0;
         margin-top: 10px;
         background: #f9f9f9;
     }
-    .init-network .type-config :deep(.van-cell) {
+    .type-config :deep(.van-cell) {
         background: #f9f9f9;
     }
-    .init-network .type-config :deep(.van-field) {
-        padding-top: 5px;
+    .type-config :deep(.van-field) {
+        padding: 5px;
         padding-bottom: 5px;
         height: 52px;
         line-height: 40px;
     }
-    .init-network .type-config :deep(.van-field__label) {
-        width: 65px;
-    }
-    .init-network .type-config :deep(.van-field__control) {
+    .type-config :deep(.van-field__body) {
         border: 1px solid #9e9e9e;
         border-radius: 4px;
-        width: 225px;
+        padding-right: 5px;
     }
-    .init-network .type-dhcp {
+    .type-pppoe :deep(.van-field__body) {
+        width: 250px;
+    }
+    .type-pppoe :deep(.van-field__label) {
+        color: #333;
+        width: 45px;
+    }
+    .type-static :deep(.van-field__body) {
+        width: 230px;
+    }
+    .type-static :deep(.van-field__label) {
+        color: #333;
+        width: 65px;
+    }
+    .type-config :deep(.van-field__control) {
+        padding-left: 5px;
+    }
+    .type-dhcp {
         text-align: center;
     }
+
 </style>

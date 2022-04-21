@@ -18,7 +18,8 @@ import {
     Tabs,
     Popover,
     Search,
-    ConfigProvider
+    ConfigProvider,
+    DatetimePicker
 } from "vant"
 import App from "./App.vue"
 import axios from "axios" // ajax
@@ -57,6 +58,7 @@ app.use(Tabs)
 app.use(Popover)
 app.use(Search)
 app.use(ConfigProvider)
+app.use(DatetimePicker)
 /* 定义全局变量 */
 app.config.globalProperties.$axios = axios
 app.config.globalProperties.$req = $req

@@ -1,7 +1,8 @@
 <template>
     <div id="detailList">
         <van-cell :title="val" v-for="(key, val) in listData">
-            <span>{{ key }}</span>
+            <router-link v-if="typeof key === 'object'" :to="key.url" class="linkStyle">{{ key.name }}</router-link>
+            <span v-else>{{ key }}</span>
         </van-cell>
     </div>
 </template>
@@ -15,7 +16,10 @@ const listDatas = defineProps({
 })
 </script>
 
-<style>
+<style scoped>
+#detailList .linkStyle {
+    color: #617cf0 !important;
+}
 #detailList .van-cell {
     padding: 0 !important;
     height: 50px !important;
@@ -33,7 +37,6 @@ const listDatas = defineProps({
     height: 50px !important;
     text-align: left !important;
     margin-left: 10px;
-    width: 27px;
     color: #666666 !important;
 }
 #detailList .van-cell__title,

@@ -1,33 +1,281 @@
 <template>
-  <van-row justify="center">
-    <h1 id="topology">{{ title }}</h1>
-    <h1 id="topology">{{ $t('DashBoard.topology') }}</h1>
-    <p>{{ RC('map') }}</p>
-  </van-row>
+    <div>
+        <box-title :titleName="topologyTitle"></box-title>
+        <div class="chartContiner">
+            <div class="legend_continer">
+                <div class="legend_row">
+                    <van-icon name="circle" style="color:red;font-weight: bold;"/>
+                    <span>{{online + " : " + onlineNum}}</span>
+                </div>
+                <div class="legend_row">
+                    <van-icon name="circle"  style="color:black;font-weight: bold;"/>
+                    <span>{{offline + " : " + offlineNum}}</span>
+                </div>
+                <div class="legend_row">
+                    <van-icon name="circle"  style="color:blue;font-weight: bold;"/>
+                    <span>{{couldUpdate + " : " + couleUpdateNum}}</span>
+                </div>
+            </div>
+            <v-chart class="topologyChart" :option="option" :autoresize="true"/>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-// ç”¨æ³•1ï¼ŒæŽ¨è
-import { useI18n } from 'vue-i18n'
-// ç”¨æ³•2, ä¸æŽ¨è
-import i18n from "@/i18n/i18n"
+
+import { use } from "echarts/core"
+import { CanvasRenderer } from "echarts/renderers"
+import { GraphChart,LinesChart } from "echarts/charts"
+import VChart from "vue-echarts"
+import { UniversalTransition } from "echarts/features"
+import { useI18n } from "vue-i18n"
+import BoxTitle from "@/components/BoxTitle"
+
+import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from "echarts/components"
+import { ref } from "vue"
+import Cloud from "@/frame/assets/img/cloud.png"
+import Internet from "@/frame/assets/img/internet.png"
+import Gateway from "@/frame/assets/img/MSG360-4-PWR-F.png"
+import Switch from "@/frame/assets/img/Switch.png"
+import AP from "@/frame/assets/img/WA6520-C_T.png"
+
+// import { off } from "process"
+
+use([CanvasRenderer, GraphChart, TitleComponent, TooltipComponent, LegendComponent, LinesChart,GridComponent,UniversalTransition])
 const { t } = useI18n()
-const $t = i18n.global.t
+const topologyTitle = ref(t("DashBoard.topology"))
+const online = t("DashBoard.online")
+const offline = t("DashBoard.offline")
+const couldUpdate = t("DashBoard.couldupdate")
 
-const RC = (str) => {
-  return t('DashBoard.' + str)
-}
+let onlineNum = 20
+let offlineNum = 10
+let couleUpdateNum = 5
 
-const title = ref(t('DashBoard.topology'))
-console.log('i18n', $t('DashBoard.topology'))
+const X1 = 130 //×ó²àcloud
+const X2 = 270 //ÓÒ²àinternet
+const X3 = X1 + (X2 - X1) / 2 //ÖÐ¼ä·Ö¸îµã
+const Y1 = 60 //µÚÒ»ÐÐY×ø±ê
+const Y2 = 150 //µÚ¶þÐÐY×ø±ê
+const Y3 = 250 //µÚÈýÐÐY×ø±ê
+const Y4 = 350 //µÚËÄÐÐY×ø±ê
+const Y5 = Y1 + (Y2 - Y1) / 2 //µÚÒ»ÐÐºÍµÚ¶þÐÐÖ®¼ä·Ö²æµãY×ø±ê
+
+// let ImgPath = "image://" + "@/frame/assets/img/"
+let graphData = [
+    {
+        name:"Cloud",
+        symbol:"image://" + Cloud,
+        value:[X1,Y1],//Ê¹ÓÃ2d×ø±êÏµµÄÊ±ºò£¬ÒªÓÃvalueµÄÐÎÊ½£¬²»ÄÜÓÃx y
+        symbolSize:[62,40]
+    },
+    {
+        name:"Internet",
+        symbol:"image://" + Internet,
+        value:[X2,Y1],
+        symbolSize:[40,40]
+    },
+    {
+        name:"Gateway",
+        symbol:"image://" + Gateway,
+        value:[X3,Y2],
+        symbolSize:[125,30]
+    },
+    {
+        name:"Switch",
+        symbol:"image://" + Switch,
+        value:[X3,Y3],
+        symbolSize:[158,30]
+    },
+    {
+        name:"AP",
+        symbol:"image://" + AP,
+        value:[X3,Y4],
+        symbolSize:[50,50]
+    }
+]
+let linksData = [
+    {
+        coords:[
+            [X1,Y1 + 20],
+            [X1,Y5]
+        ]
+    },
+    {
+        coords:[
+            [X2,Y1 + 20],
+            [X2,Y5]
+        ]
+    },
+    {
+        coords:[
+            [X1,Y5],
+            [X2,Y5]
+        ]
+    },
+    {
+        coords:[
+            [X3,Y5],
+            [X3,Y2 - 20]
+        ]
+    },
+    {
+        coords:[
+            [X3,Y2 + 20],
+            [X3,Y3 - 20]
+        ]
+    },
+    {
+        coords:[
+            [X3,Y3 + 20],
+            [X3,Y4 - 30]
+        ]
+    }
+]
+let option = ref({
+    tooltip: {
+        trigger: "item",
+        // formatter: "{a} <br/>{b} : {c} ({d}%)"
+    },
+    // legend:{
+    //     show:true,
+    //     zlevel:4,
+    //     left:"left",
+    //     top:"top",
+    //     orient:"vertical",
+    //     ailgn:"left",
+    //     padding:10,
+    //     itemGap:10,
+    //     itemWidth:10,
+    //     itemHeight:10,
+    //     data:[
+    //         {
+    //             name:online + ":" + 20,
+    //             icon:"circle"
+    //         },
+    //         {
+    //             name:offline + ":" + 20,
+    //             icon:"circle"
+    //         },
+    //         {
+    //             name:couldupdate + ":" + 20,
+    //             icon:"circle"
+    //         },
+    //     ]
+    // },
+    grid: [
+        {
+            left: 0,
+            top: 0,
+            bottom: 0,
+            right: 0,
+            show: true, //test
+            // borderColor: '#eee',
+        }
+    ],
+    xAxis: [{
+        min: 0,
+        max: 400,
+        // gridIndex: 0,
+        positon:"top",
+        show: true,
+        type: "value"
+    }],
+    yAxis: [{
+        min: 0,
+        max: 400,
+        // gridIndex: 0,
+        show: true,
+        inverse:true,
+        type: "value"
+    }],
+    series: [
+        {
+            name: "TopologyChart",
+            type: "graph",
+            // layout: 'none',
+            coordinateSystem:"cartesian2d",//Ê¹ÓÃ¶þÎ¬µÄÖ±½Ç×ø±êÏµ
+            force: null,
+            draggable: true,
+            roam: true,
+            // xAxisIndex:0,
+            // yAxisIndex:0,
+            roma:false,
+            zoom:1,
+            zlevel: 2,
+            data: graphData,
+            links:[],
+            symbolKeepAspect:true,
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: "rgba(0, 0, 0, 0.5)"
+                }
+            },
+            label:{
+                show:true,
+                position:"insideTopRight",
+                offset:[10,-15],
+                color:"#fff",
+                fontSize:10,
+                backgroundColor:"rgba(78, 144, 249, 1)",
+                borderRadius:8,
+                padding:3,
+                lineHeight:12,
+                formatter:function(){
+                    return "10/30"
+                }
+            }
+        },
+        {
+            name:"Lines",
+            type: "lines",
+            // polyline: true,
+            coordinateSystem: "cartesian2d",
+            zlevel: 1,
+            lineStyle: {
+                type: "solid",
+                width: 2,
+                color: "#175064",
+            },
+            // effect: {
+            //     show: true,
+            //     trailLength: 0.1,
+            //     symbol: "arrow",
+            //     color: "orange",
+            //     symbolSize: 8
+            // },
+            data: linksData
+        }
+    ]
+})
+console.log(option)
 </script>
 
 <style scoped>
-#topology {
-  height: 300px;
-  text-align: center;
-  font-weight: 60px;
+.chartContiner {
+    height: 400px;
+    width: 344px;
+    /* padding-left: 10px; */
+    /* padding-right: 10px; */
+    text-align: center;
+    font-weight: 60px;
+    /* border:1px solid red; */
+    background: #ffffff;
+    /* padding: 10px; */
+    /* flex: 1; */
+    margin: auto;
+}
+.legend_continer{
+    /* border: 1px solid green; */
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    text-align: left;
+    line-height: 20px;
+    z-index: 999;
 }
 </style>
-

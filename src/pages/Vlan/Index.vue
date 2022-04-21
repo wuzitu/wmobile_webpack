@@ -10,7 +10,7 @@
              <div class="vlanCardWrap" v-for="(vlanInfoListItem, index) in vlanInfoList" :key="'vlan' + index">
                 <vlan-list :vlanData="vlanInfoListItem" />
             </div>
-             <router-link to="/AddWifi">
+             <router-link to="/AddVlan">
                 <div class="add-vlan">
                     <svg-icon icon-class="ic_addvlan" class="add-vlan-icon"></svg-icon>
                     <span class="add-vlan-title">{{ t("Vlan.addVlan") }}</span>

@@ -3,7 +3,7 @@
     <network ref="initNetwork"></network>
     <wireless ref="initWireless"></wireless>
     <div class="button-box">
-        <van-button type="default" to="">{{ t("Previous") }}</van-button>
+        <van-button type="default" @click="goPrevious">{{ t("Previous") }}</van-button>
         <van-button type="primary" color="#617CF0" @click="initSubmit">{{ t("Complete") }}</van-button>
     </div>
 </template>
@@ -30,6 +30,12 @@ const initSubmit = () => {
     console.log(wirelessData)
 
     goToLogin()
+}
+
+const goPrevious = () => {
+    router.push({
+        name: "Login"
+    })
 }
 
 const goToLogin = () => {

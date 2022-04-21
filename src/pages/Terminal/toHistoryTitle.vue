@@ -1,6 +1,6 @@
 <template>
-    <box-title :titleName="detailValue.echartTitle" style="position: relative">
-        <router-link :to="detailValue.detailRouter" style="position: absolute; top: 0; right: 0">
+    <box-title :titleName="detailValue.echartTitle" style="position: relative;">
+        <router-link :to="detailValue.detailRouter" style="position: absolute; top: 0; right: 0;">
             <span class="viewButton">
                 <span>完整历史数据</span>
                 <svg-icon icon-class="ic_arrow" class="goHistory"></svg-icon>
@@ -25,7 +25,7 @@ const detailValue = defineProps({
 // const detailRouter=defineProps(["detailRouter"])
 </script>
 
-<style scope>
+<style scoped>
 .viewButton {
     font-size: 14px;
     font-family: PingFang SC;

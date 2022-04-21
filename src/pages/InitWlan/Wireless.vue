@@ -7,17 +7,24 @@
                 <Switch v-model="checked" size="24" />
             </template>
         </van-cell>
-        <field v-model="password" :label="t('Wireless.password')" required></field>
+        <div v-show="checked">
+            <password-field
+                :password="password"
+                :label="t('Wireless.password')"
+                :placeholder="t('Password.passwordLength')"
+                @changePassword="wirelessPassword"
+            ></password-field>
+        </div>
     </div>
     <div class="advanced-cfg">
         <collapse v-model="vlanActive">
             <collapse-item :title="t('AdvancedCfg')" name="1">
-                <field v-model="vlanId" label="VLAN" required></field>
-                <field v-model="remark" :label="t('Remark')"></field>
-                <field v-model="gateway" :label="t('Network.gatewayAddress')" required></field>
-                <field v-model="netmask" :label="t('Network.subnetMask3')" required></field>
-                <field v-model="startAddress" :label="t('Network.assignmentStart')" required></field>
-                <field v-model="count" :label="t('Network.assignmentTotal')" required></field>
+                <field v-model="vlanId" label="VLAN" :placeholder="t('Vlan.initVlanTips')" required></field>
+                <field v-model="remark" :label="t('Remark')" :placeholder="t('Vlan.initVlanRemark')"></field>
+                <field v-model="gateway" :label="t('Network.gatewayAddress')" placeholder="192.168.1.1" required></field>
+                <field v-model="netmask" :label="t('Network.subnetMask3')" placeholder="255.255.255.0" required></field>
+                <field v-model="startAddress" :label="t('Network.assignmentStart')" placeholder="192.168.1.1" required></field>
+                <field v-model="count" :label="t('Network.assignmentTotal')" placeholder="254" required></field>
             </collapse-item>
         </collapse>
     </div>
@@ -28,12 +35,17 @@ import { ref } from "vue"
 import { useI18n } from "vue-i18n"
 import { Field, Switch, Collapse, CollapseItem } from "vant"
 import BoxTitle from "../../components/BoxTitle"
+import PasswordField from "../../components/PasswordField"
 
 const { t } = useI18n()
 const titleName = ref(t("Wireless.title1"))
 const SSID = ref(""), checked = ref(true), password = ref("")
 const vlanId = ref(""), remark = ref(""), gateway = ref(""), netmask = ref(""), startAddress = ref(""), count = ref("")
 const vlanActive = ref([])
+
+const wirelessPassword = (e) => {
+    password.value = e
+}
 
 const returnData = () => {
     const data = {

@@ -1,5 +1,6 @@
 <template>
     <div class="LanCardWrap">
+        <poe-port></poe-port>
         <port-flow></port-flow>
         <port-list :model="sModel" :portList="aPort" :title="sTitle"></port-list>
     </div>
@@ -11,6 +12,7 @@ import { useRouter } from "vue-router"
 import { useI18n } from "vue-i18n"
 import PortFlow from "./PortFlow"
 import PortList from "./PortList"
+import PoePort from "./PoePort"
 
 const { t } = useI18n()
 const router = useRouter()

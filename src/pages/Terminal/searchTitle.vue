@@ -20,7 +20,7 @@ const detailValue = defineProps({
 })
 </script>
 
-<style scope>
+<style scoped>
 .wifiHeader {
     padding-right: 10px;
     background: #ffffff;

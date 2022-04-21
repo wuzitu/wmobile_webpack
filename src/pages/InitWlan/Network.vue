@@ -17,7 +17,12 @@
                 :selectedInterface="interfaceName"
                 :interfaceList="interfaceList"
                 :selectedType="networkProto"
-            ></interface-type>
+                :maxDns="6">
+
+                <template #interface-title>
+                    <p class="config-title">{{ t("Network.interfaceWan") }}</p>
+                </template>
+            </interface-type>
         </div>
     </div>
 </template>
@@ -62,7 +67,7 @@ defineExpose({
 // 假数据
 let interfaceName = "WAN(UP)"
 const interfaceList = ["WAN(UP)", "WAN2(UP)", "WAN3(UP)"]
-let networkProto = "PPPoE"
+let networkProto = "静态IP"
 </script>
 
 <style scoped>

@@ -7,6 +7,7 @@ import VChart, { THEME_KEY } from "vue-echarts"
 import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { LineChart } from "echarts/charts"
+import { useI18n } from "vue-i18n"
 import {
     TitleComponent,
     TooltipComponent,
@@ -36,66 +37,202 @@ export default defineComponent({
         ChartData: Array
     },
     setup: (props) => {
-        let lineColor = ""
-        let areaColor = ""
-        switch(props.chartName){
-            case "CPU":
-                lineColor = "rgba(244, 62, 59, 1)"
-                areaColor = "rgba(252, 207, 206, 0.25)"
-                break
-            case "Storage":
-                lineColor = "rgba(16, 180, 118, 1)"
-                areaColor = "rgba(0, 175, 109, 1)"
-                break
-            case "Temperature":
-                lineColor = "rgba(255, 226, 66, 1)"
-                areaColor = "rgba(255, 225, 62, 1)"
-                break
-            default:
-                lineColor = "rgba(244, 62, 59, 1)"
-                areaColor = "rgba(252, 207, 206, 0.25)"
-                break
-        }
+        const { t } = useI18n()
+        const sDown  = t("DevInfo.downflow")
+        const sUp  = t("DevInfo.upflow")
         const option = ref({
-            width: "90%",
-            height: 85,
-            colorBy:"series",
-            grid: {
-                left: 15,
-                right: 0,
-                bottom: "60%",
-                top:25,
-                containLabel: true
+            width: "92%",
+            height: 142,
+            legend:{
+                orient:"horizontal",//图例方向
+                right: "center",
+                top: 0,
+                bottom:0,
+                icon: "rect",
+                itemWidth:10,
+                itemHeight:10,
+                data:[
+                    {
+                        name:sUp,
+                        itemStyle:{
+                            color: "rgba(97, 124, 240, 1)"
+                        },
+                    },
+                    {
+                        name:sDown,
+                        itemStyle:{
+                            color:"rgba(255, 106, 56, 1)",
+                        },
+
+                    }
+                ]
             },
-            xAxis: {
-                type: "category",
-                boundaryGap: false,
-                data: props.aTimes
-            },
-            yAxis: {
-                type: "value",
-                axisLabel: {
-                    formatter: "{value} %"
+            color: ["#3398DB"],
+            tooltip : {
+                trigger: "axis",
+                axisPointer : { // 坐标轴指示器，坐标轴触发有效
+                    type : "shadow" // 默认为直线，可选为：'line' | 'shadow'
                 }
             },
-
-            series: [
+            grid:[ //用于调整X轴以及Y轴的位置
                 {
-                    // name: props.alegendData[0],
-                    type: "line",
+                    show: false,
+                    bottom: 50,
+                    top:120,
+                    left: 0,
+                    right: 200,
+                    containLabel: true,
+                    height: 50,
+                }, {
+                    show: false,
+                    top: 120,
+                    left: 47,
+                    height: 0,
+                    zlevel:100
+                }, {
+                    show: false,
+                    top: 70,
+                    bottom: 50,
+                    left: 0,
+                    right:200,
+                    containLabel: true,
+                    height: 50
+                }
+            ],
+            xAxis : [
+                {
+                    type: "category",
+                    position: "bottom",
+                    axisLine: {
+                        show: false,
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: false,
+                    },
+                    data: [],
+
+                }, {
+                    gridIndex: 1,
+                    type: "category",
+                    position: "center",
+                    axisLine: {
+                        show: true
+                    },
+                    axisTick: {
+                        show: true
+                    },
+                    zlevel:200,
+                    axisLabel: {
+                        show: true,
+                        align: "center",
+                        textStyle: {
+                            color: "#323232",
+                            fontSize: 12
+                        }
+                    },
+                    data: ["00:00", "06:00", "12:00", "18:00", "24:00"],
+                },
+                {
+                    gridIndex: 2,
+                    type: "category",
+                    position: "top",
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: false,
+                    },
+                    data: [],
+                }
+            ],
+            yAxis : [
+                {
+                    type: "value",
+                    inverse: true, //echarts Y轴翻转属性,
+                    position: "left", //位置属性
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            color: "#646464",
+                            fontSize: 12,
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: "rgba(0,162,255,0.08)",
+                            width: 1,
+                        }
+                    },
+                    min:0,
+                    max:100,
+                },
+                {
+                    gridIndex: 1, //对应的是grid  通过grid设置X Y相对位置
+                    show: false,
+                }, {
+                    gridIndex: 2,
+                    type: "value",
+                    position: "left", //双Y轴一个翻转一个不翻转
+                    min:0,
+                    max:100,
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            color: "#646464",
+                            fontSize: 12,
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: "rgba(0,162,255,0.08)",
+                            width: 1,
+                        }
+                    }
+                }
+            ],
+            series : [
+                {
+                    gridIndex:0, //选取调整好的轴,调整图形是向上还是向下
+                    name:sUp,
+                    type:"line",
+                    data:[0, 50, 45,80,100,85,30, 0],
+                    xAxisIndex: 2,
                     symbol: "none",
                     smooth: true,
-                    lineStyle:{
-                        type:"solid",
-                        color: lineColor
+                    yAxisIndex: 2,
+                    itemStyle:{
+                        color:"#B23AEE"
                     },
                     areaStyle: {
-                        color:areaColor
+                        color:"rgba(215, 222, 251, 1)"
                     },
-                    data: props.ChartData
+                    lineStyle:{
+                        color:"rgba(97, 124, 240, 1)"
+                    }
+                },
+                {
+                    gridIndex:2, // 选取调整好的轴,调整图形是向上还是向下
+                    name:sDown,
+                    symbol: "none",
+                    smooth: true,
+                    type:"line",
+                    data:[0, 50, 45, 60, 80,100,85,30, 0],
+                    areaStyle: {
+                        color:"rgba(255, 218, 205, 1)"
+                    },
+                    lineStyle:{
+                        color:"rgba(255, 106, 56, 1)"
+                    }
                 }
-            ]
-        })
+            ] })
 
         return { option }
     }
@@ -105,6 +242,7 @@ export default defineComponent({
 
 <style scoped>
 .chart {
-  height: 150px;
+  height: 180px;
+  margin-top: 14px;
 }
 </style>
