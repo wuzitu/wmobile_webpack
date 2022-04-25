@@ -1,5 +1,5 @@
 <template>
-    <div class="cardWrap">
+    <div class="cardWrap" @click="clickCardWrap">
         <div class="title">
             <span>
                 <span class="company">{{ cards.company }}</span>
@@ -8,36 +8,38 @@
             <svg-icon icon-class="ic_edit" class="iconStyle" @click="clickEdit"></svg-icon>
         </div>
         <p>
-            <!-- <span>型号：{{cards.model}}</span>
-            <span class="lineSpan">版本：{{cards.softver}}</span>
-            <span class="upgrade" v-if="cards.isUpGrade=='true'">可升级</span> -->
             <span>IP：{{ cards.IPAddress }}</span>
-            <span class="lineSpan">连接时长：{{ cards.linkTimes }}</span>
+            <span class="lineSpan">{{ t("Switch.linktime") }}：{{ cards.linkTimes }}</span>
         </p>
     </div>
 </template>
 
 <script setup>
-import { defineProps } from "vue"
+import { defineProps, watch, reactive, toRef } from "vue"
 import { useRouter } from "vue-router"
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
 const router = useRouter()
 const cardData = defineProps({ cardData: Object })
-const cards = cardData.cardData
-const clickEdit = () => {
+const cards = toRef(cardData, "cardData")
+
+const clickEdit = () => {}
+
+const clickCardWrap = () => {
     const devData = {
-        "devName":cards.decice,
-        "devType":cards.decice,
-        "onlinetime": cards.linkTimes,
-        "ipaddress":cards.IPAddress,
-        "devStatus":2,
-        "macaddress":"0000-0000-00001",
-        "devSN":"123456789201215",
-        "devVersion":"R2401",
-        "isSupportPoe":true,
-        "isSupportWan":true
+        devName: cards.decice,
+        devType: cards.decice,
+        onlinetime: cards.linkTimes,
+        ipaddress: cards.IPAddress,
+        devStatus: 2,
+        macaddress: "0000-0000-00001",
+        devSN: "123456789201215",
+        devVersion: "R2401",
+        isSupportPoe: true,
+        isSupportWan: true
     }
     // router.push({ path:`/DevInfo/${devData.devName}/${devData.devType}`})
-    router.push({ name:"DevInfo",params:devData })
+    router.push({ name: "DevInfo", params: devData })
 }
 </script>
 

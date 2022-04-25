@@ -4,50 +4,64 @@
             <svg-icon class="ic_logo" icon-class="ic_logo"></svg-icon>
         </div>
         <div class="login-password">
-            <field
-                :type="passwordType"
+            <password-field
+                :password="password"
                 :placeholder="t('Password.placeholder1')"
-                left-icon="lock"
-                :right-icon="passwordEye"
-                @click-right-icon="inputTypeSwitch"
-            ></field>
+                :left-icon="true"
+                @changePassword="userPassword"
+            ></password-field>
             <p class="forget" @click="forgetTips">{{ t("Password.forget") }}</p>
             <van-button round type="primary" size="large" color="#617CF0" @click="initSubmit">{{ t("Login") }}</van-button>
         </div>
         <div class="go-cloud" @click="goToCloud">
-            <span>云端管理</span>
+            <span>{{ t("LoginCloud") }}</span>
             <svg-icon class="ic_arrow" icon-class="ic_arrow"></svg-icon>
         </div>
+        <dialogs
+            v-model:show="show"
+            :title="t('Tips')"
+            show-cancel-button
+            :cancel-button-text="t('Cancel')"
+            :confirm-button-text="t('Apply')"
+            @confirm="goToLogin"
+        >
+            <div class="forget-text">
+                <p class="forget-tips">{{ t("Tips") }}: <span>设置提示</span></p>
+                <p>{{ t("Password.LoginForget") }}</p>
+            </div>
+        </dialogs>
     </div>
 </template>
 
 <script setup>
 import { ref } from "vue"
 import { useI18n } from "vue-i18n"
-import { Field } from "vant"
 import { useRouter } from "vue-router"
+import { Dialog } from "vant"
+import PasswordField from "../../components/PasswordField"
 const { t } = useI18n()
 const router = useRouter()
-const passwordType = ref("password")
-const passwordEye = ref("eye-o")
+const dialogs = Dialog.Component
+const password = ref("")
+const show = ref(false)
 
-const inputTypeSwitch = () => {
-    if (passwordType.value == "password") {
-        passwordType.value = "text"
-        passwordEye.value = "closed-eye"
-    } else {
-        passwordType.value = "password"
-        passwordEye.value = "eye-o"
-    }
+const userPassword = (e) => {
+    password.value = e
 }
 
 const forgetTips = () => {
-
+    show.value = true
 }
 
 const goToCloud = () => {
     router.push({
         name: "GuideDownload"
+    })
+}
+
+const initSubmit = () => {
+    router.push({
+        name: "DashBoard"
     })
 }
 </script>
@@ -79,6 +93,19 @@ const goToCloud = () => {
         font-size: 12px;
         color: #617CF0;
         text-align: right;
+    }
+
+    .forget-text {
+        padding: 0 12px;
+    }
+    .forget-tips {
+        font-weight: bold;
+    }
+    .forget-tips span {
+        color: #ee0a24;
+    }
+    :deep(.van-dialog__header) {
+        padding-top: 5px;
     }
     :deep(.van-button__text) {
         font-size: 18px;

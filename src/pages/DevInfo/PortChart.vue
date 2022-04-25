@@ -7,14 +7,12 @@
                 <div class ="upDownModule" v-for="item in aTemplatePorts" :key="item">
                     <div class="upModule">
                         <div class="portModule" v-show="ifIndex" v-for="{ifIndex,ifName,ifType,Status,PoeStatus} in item[0]" :title="ifName" :key="ifIndex">
-                            <svg-icon class="portImg" :icon-class="sPortType"></svg-icon>
-                            <span>{{ ifName }}</span>
-                        </div>
+                            <svg-icon class="portImg" icon-class="ic_port_up"></svg-icon>
+                         </div>
                     </div>
                     <div class="downModule" v-show="item[1] && item[1].length">
                         <div class="portModule" v-show="ifIndex" v-for="{ifIndex,ifName,ifType,Status,PoeStatus}  in item[1]" :title="ifName" :key="ifIndex">
-                            <svg-icon class="portImg" :icon-class="sPortType"></svg-icon>
-                            <span>{{ ifName  }}</span>
+                            <svg-icon class="portImg" icon-class="ic_port_down"></svg-icon>
                         </div>
                     </div>
                 </div>
@@ -30,13 +28,13 @@ import { appendFile } from "fs"
 import { defineProps, ref ,computed,reactive ,toRef} from "vue"
 import { useRoute } from "vue-router"
 import SvgIcon from "@/components/SvgIcon"
-import imgDeviceBg from "@/frame/assets/icon/img_device_bg.svg"
+import imgDeviceBg from "@/frame/assets/img/panelsvg/img_device_bg.svg"
 const route = useRoute()
 const userData = ref()
 console.log(route.params)
 let aports = reactive(route.params.aports || [])
 let arrPortPos = reactive(route.params.arrPortPos || [])
-let sStatusClass = reactive(["on","off","adm"])
+let sStatusClass = reactive(["","","ic_lightport_adm"])
 let sTypeClass = reactive(["elec","light"])
 let sPoeStatusClass = reactive(["poe-on","poe-off","poe-elec","poe-bad","poe-unsupport"])
 
@@ -66,7 +64,31 @@ aports = [
     { "ifIndex":"23","ifName":"LAN 23","ifType":"1","Status":"2","PoeStatus":"0" },
     { "ifIndex":"24","ifName":"LAN 24/WAN 3","ifType":"1","Status":"1","PoeStatus":"0" },
     { "ifIndex":"25","ifName":"WAN 1","ifType":"1","Status":"2","PoeStatus":"0" },
-    { "ifIndex":"26","ifName":"WAN 2","ifType":"1","Status":"1","PoeStatus":"0" }
+    { "ifIndex":"26","ifName":"WAN 2","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"27","ifName":"LAN 14","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"28","ifName":"LAN 15","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"29","ifName":"LAN 16","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"30","ifName":"LAN 17","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"31","ifName":"LAN 18","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"32","ifName":"LAN 19","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"33","ifName":"LAN 20","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"34","ifName":"LAN 21","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"35","ifName":"LAN 22","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"36","ifName":"LAN 23","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"37","ifName":"LAN 24/WAN 3","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"38","ifName":"WAN 1","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"39","ifName":"WAN 2","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"40","ifName":"LAN 1","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"41","ifName":"LAN 1","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"42","ifName":"LAN 2","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"43","ifName":"LAN 3","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"44","ifName":"LAN 4","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"45","ifName":"LAN 5","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"46","ifName":"LAN 6","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"47","ifName":"LAN 7","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"48","ifName":"LAN 8","ifType":"1","Status":"2","PoeStatus":"0" },
+    { "ifIndex":"49","ifName":"LAN 9","ifType":"1","Status":"1","PoeStatus":"0" },
+    { "ifIndex":"50","ifName":"LAN 9","ifType":"1","Status":"1","PoeStatus":"0" }
 ]
 arrPortPos = {
     port: [
@@ -83,9 +105,21 @@ arrPortPos = {
             { ifnum: 18, ifcount: 4, step: 2 },
         ],
         [
-            { ifnum: 25, ifcount: 0, step: 0 },
-            { ifnum: 25, ifcount: 2, step: 1 },
+            { ifnum: 25, ifcount: 4, step: 2 },
+            { ifnum: 26, ifcount: 4, step: 2 },
         ],
+        [
+            { ifnum: 33, ifcount: 4, step: 2 },
+            { ifnum: 34, ifcount: 4, step: 2 },
+        ],
+        [
+            { ifnum: 35, ifcount: 4, step: 2 },
+            { ifnum: 36, ifcount: 4, step: 2 },
+        ],
+        [
+            { ifnum: 43, ifcount: 4, step: 2 },
+            { ifnum: 44, ifcount: 4, step: 2 },
+        ]
     ],
 }
 
@@ -125,7 +159,7 @@ console.log(aTemplatePorts)
 .img_device_bg {
   width: auto;
   height: auto;
-  background: url(../../frame/assets/img/img_device_bg.svg) no-repeat;
+  background: url(../../frame/assets/img/panelsvg/img_device_bg.svg) no-repeat;
   background-size: contain;
   display:block;
 }

@@ -2,7 +2,7 @@
     <!-- this is a echart Name:
     {{ chartName }} -->
     <div class="echarts-box">
-        <v-chart class="chart" :option="option" :autoresize="true" />
+        <v-chart class="chart" :option="option" :autoresize="true" :notMerge="true" />
     </div>
 </template>
 
@@ -13,7 +13,7 @@ import { PieChart } from "echarts/charts"
 import { LineChart } from "echarts/charts"
 import { TitleComponent, TooltipComponent, LegendComponent, GridComponent, DatasetComponent, TransformComponent, ToolboxComponent } from "echarts/components"
 import VChart, { THEME_KEY } from "vue-echarts"
-import { ref, defineComponent, defineProps } from "vue"
+import { ref, defineComponent, defineProps, reactive, watch, inject } from "vue"
 import { useI18n } from "vue-i18n"
 use([CanvasRenderer, PieChart, LineChart, TitleComponent, TooltipComponent, LegendComponent, GridComponent, DatasetComponent, TransformComponent, ToolboxComponent])
 
@@ -23,21 +23,22 @@ export default defineComponent({
         VChart
     },
     provide: {
-        [THEME_KEY]: "dark"
+        // [THEME_KEY]: "dark"
     },
     props: {
-        chartName: String,
-        alegendData: Array,
-        aTimesX: Array,
-        rrmechartAjustData: Array,
-        selects: Object
+        radioindex: Number,
+        echartData: Object
     },
     setup: (props) => {
         const { t } = useI18n()
         const before = t("RRM.before")
         const after = t("RRM.after")
-
-        const option = ref({
+        const lengend1 = t("RRM.legend1")
+        const lengend2 = t("RRM.legend2")
+        const lengend3 = t("RRM.legend3")
+        const lengend4 = t("RRM.legend4")
+        const lengend5 = t("RRM.legend5")
+        let option = ref({
             width: "90%",
             // height: 200,
             backgroundColor: "#fff",
@@ -49,22 +50,24 @@ export default defineComponent({
                         if (ii == 0) {
                             sTempt += oData[ii].name + "<br/>"
                         }
-                        if (ii % 2 == 0) {
-                            sTempt += oData[ii].seriesName + "(" + before + "):" + oData[ii].value + "%" + "<br/>"
-                        } else {
-                            sTempt += oData[ii].seriesName + "(" + after + "):" + oData[ii].value + "%" + "<br/>"
-                        }
+                        sTempt += oData[ii].seriesName + ":" + oData[ii].value + "%" + "<br/>"
+                        // if (ii % 2 == 0) {
+                        // sTempt += oData[ii].seriesName + "(" + before + "):" + oData[ii].value + "%" + "<br/>"
+                        // } else {
+                        //     sTempt += oData[ii].seriesName + "(" + after + "):" + oData[ii].value + "%" + "<br/>"
+                        // }
                     }
                     return sTempt
                 }
             },
-            color: ["#4472C5", "#ED7C30", "#80FF80", "#FF8096", "#800080"],
+            color: ["#AB61F0", "#FF6A38", "#F43E3B", "#617CF0", "#00AF6D"],
             legend: {
                 top: 5,
                 icon: "rect",
-                show: false,
-                data: props.alegendData,
-                selected: props.selects
+                // show: false,
+                left: 10,
+                data: [lengend1, lengend2, lengend3, lengend4, lengend5],
+                selected: { [lengend1]: true, [lengend2]: false, [lengend3]: false, [lengend4]: false, [lengend5]: false }
             },
             grid: {
                 left: "3%",
@@ -80,7 +83,7 @@ export default defineComponent({
             xAxis: {
                 type: "category",
                 boundaryGap: false,
-                data: props.aTimesX
+                data: props.echartData.aTimesX[props.radioindex]
             },
             yAxis: {
                 type: "value",
@@ -91,106 +94,29 @@ export default defineComponent({
 
             series: [
                 {
-                    name: props.alegendData[0],
+                    name: lengend1,
                     type: "line",
-                    symbol: "none",
-                    data: props.rrmechartAjustData[0]
-                },
-
-                {
-                    name: props.alegendData[0],
-                    type: "line",
-                    symbol: "none",
-                    itemStyle: {
-                        normal: {
-                            lineStyle: {
-                                width: 2,
-                                type: "dotted" //'dotted'虚线 'solid'实线
-                            }
-                        }
-                    },
-                    data: props.rrmechartAjustData[1]
-                },
-
-                {
-                    name: props.alegendData[1],
-                    type: "line",
-                    symbol: "none",
-                    data: props.rrmechartAjustData[2]
+                    data: props.echartData.ajustDataRadio[props.radioindex][0]
                 },
                 {
-                    name: props.alegendData[1],
+                    name: lengend2,
                     type: "line",
-                    symbol: "none",
-                    itemStyle: {
-                        normal: {
-                            lineStyle: {
-                                width: 2,
-                                type: "dotted" //'dotted'虚线 'solid'实线
-                            }
-                        }
-                    },
-                    data: props.rrmechartAjustData[3]
+                    data: props.echartData.ajustDataRadio[props.radioindex][1]
                 },
                 {
-                    name: props.alegendData[2],
+                    name: lengend3,
                     type: "line",
-                    symbol: "none",
-                    data: props.rrmechartAjustData[4]
+                    data: props.echartData.ajustDataRadio[props.radioindex][2]
                 },
                 {
-                    name: props.alegendData[2],
+                    name: lengend4,
                     type: "line",
-                    symbol: "none",
-                    itemStyle: {
-                        normal: {
-                            lineStyle: {
-                                width: 2,
-                                type: "dotted" //'dotted'虚线 'solid'实线
-                            }
-                        }
-                    },
-                    data: props.rrmechartAjustData[5]
+                    data: props.echartData.ajustDataRadio[props.radioindex][3]
                 },
                 {
-                    name: props.alegendData[3],
+                    name: lengend5,
                     type: "line",
-                    symbol: "none",
-                    data: props.rrmechartAjustData[6]
-                },
-                {
-                    name: props.alegendData[3],
-                    type: "line",
-                    symbol: "none",
-                    itemStyle: {
-                        normal: {
-                            lineStyle: {
-                                width: 2,
-                                type: "dotted" //'dotted'虚线 'solid'实线
-                            }
-                        }
-                    },
-                    data: props.rrmechartAjustData[7]
-                },
-                {
-                    name: props.alegendData[4],
-                    type: "line",
-                    symbol: "none",
-                    data: props.rrmechartAjustData[8]
-                },
-                {
-                    name: props.alegendData[4],
-                    type: "line",
-                    symbol: "none",
-                    itemStyle: {
-                        normal: {
-                            lineStyle: {
-                                width: 2,
-                                type: "dotted" //'dotted'虚线 'solid'实线
-                            }
-                        }
-                    },
-                    data: props.rrmechartAjustData[9]
+                    data: props.echartData.ajustDataRadio[props.radioindex][4]
                 }
             ]
         })
@@ -204,14 +130,9 @@ export default defineComponent({
 .echarts-box {
     width: 100%;
     height: 100%;
-    /* background: #073055; */
     box-sizing: border-box;
     padding: 0.5rem 0.425rem 0.4rem 0.425rem;
     display: inline-block;
-    /* .echart {
-    width: 100%;
-    height: 100%;
-  } */
 }
 
 .chart {

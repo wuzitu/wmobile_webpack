@@ -1,8 +1,8 @@
 <template>
     <div class="height100">
         <EditPass @submit="submits" v-if="type == 'rootPass'"></EditPass>
-        <EditTftp v-if="type == 'tftpServce'"></EditTftp>
-        <EditAddress v-if="type == 'addressManage'"></EditAddress>
+        <EditTftp @submit="tftpSubmits" v-if="type == 'tftpServce'"></EditTftp>
+        <EditAddress @submit="submitAddress" v-if="type == 'addressManage'"></EditAddress>
     </div>
 </template>
 
@@ -15,6 +15,12 @@ const route = useRoute()
 const type = route.query.type
 const submits = (data) => {
     console.log(data.values)
+}
+const tftpSubmits = (data) => {
+    console.log(data)
+}
+const submitAddress = (data) => {
+    console.log(data)
 }
 </script>
 

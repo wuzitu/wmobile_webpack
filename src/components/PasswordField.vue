@@ -4,12 +4,15 @@
         :type="passwordType"
         :label="props.label"
         :placeholder="props.placeholder"
-        :left-icon="leftIcon"
         :right-icon="passwordEye"
+        :required="props.required"
         @click-right-icon="inputTypeSwitch"
         @update:model-value="onUpdate"
-        required
-    ></field>
+    >
+        <template #left-icon>
+            <svg-icon v-show="props.leftIcon" class="ic_login_key" icon-class="ic_login_key"></svg-icon>
+        </template>
+    </field>
 </template>
 
 <script setup>
@@ -42,8 +45,12 @@ const props = defineProps({
         default: ""
     },
     leftIcon: {
-        type: String,
-        default: ""
+        type: Boolean,
+        default: false
+    },
+    required: {
+        type: Boolean,
+        default: true
     }
 })
 
@@ -54,3 +61,11 @@ const onUpdate = (value) => {
     emit("changePassword", value)
 }
 </script>
+
+<style scoped>
+    .ic_login_key {
+        width: 18px;
+        height: 18px;
+        vertical-align: -3px;
+    }
+</style>

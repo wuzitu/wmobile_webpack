@@ -2,7 +2,7 @@
     <div class="height100">
         <van-sticky :offset-top="38">
             <div class="deviceHeader">
-                <span>{{ t("Vlan.selectDevice") }}</span>
+                 <slot name="device-title"></slot>
                 <Search class="searchStyle" v-model="value" left-icon="none" placeholder="请输入设备名称或型号" />
                 <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
             </div>

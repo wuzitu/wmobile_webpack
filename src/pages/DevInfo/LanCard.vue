@@ -1,8 +1,8 @@
 <template>
     <div class="LanCardWrap">
         <poe-port></poe-port>
-        <port-flow></port-flow>
-        <port-list :model="sModel" :portList="aPort" :title="sTitle"></port-list>
+        <port-flow :tabName="sTabName" ></port-flow>
+        <port-list id="port-list" class="port-list" :model="sModel" :portList="aPort" :title="sTitle"></port-list>
     </div>
 </template>
 
@@ -16,7 +16,7 @@ import PoePort from "./PoePort"
 
 const { t } = useI18n()
 const router = useRouter()
-const props = defineProps(["devData"])
+const props = defineProps(["devData","tabName"])
 // console.log(router.params)  ChartData: Array
 
 let coreData = ref({})
@@ -27,7 +27,8 @@ let aData = [0,40,50,100,75,70,65]
 
 let sModel = props.devData.index
 let sTitle = ref("")
-sTitle = "PoE"+ t("DevInfo.interface") + t("DevInfo.config")
+let sTabName = ref(props.tabName)
+sTitle = t("DevInfo.interface") + t("DevInfo.config")
 
 let aPort = ref([
     { "name":"G1/0/1","type":"LAN","status":"1","isolate":"0","aggretation":"0","powerup":"0","PVID":"1","vlanid":"2","inrate":"0.02","outrate":"0.54","inerror":"1000","outerror":"110" },
@@ -53,6 +54,11 @@ let aPort = ref([
         width: 375px;
         height: auto;
         overflow: auto;
+        background:"#f7f7f7";
+    }
+
+    .LanCardWrap #port-list.port-list {
+        margin-top: 10px;
     }
 
 </style>

@@ -25,7 +25,6 @@ const titleName = ref(t("Password.title1"))
 
 const userPassword = (e) => {
     password.value = e
-    console.log(password)
 }
 
 const returnData = () => {

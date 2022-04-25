@@ -53,7 +53,7 @@ const oInfo = ref({
     "version":"R2401",
     "sn":"123456789201225",
     "ipaddress":"192.168.0.1",
-    "macaddress":"2022-03-16 11:00:30",
+    "macaddress":"0000-0000-0001",
     "status":"在线",
     "runtime":"5天10小时25分钟30秒",
     "isUpGrade":"true"

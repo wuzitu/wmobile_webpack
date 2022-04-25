@@ -1,5 +1,5 @@
 <template>
-    <van-config-provider :theme-vars="themeVars">
+    <div id="terminalPage">
         <div>
             <div class="apCount">
                 <div v-for="item in apStatistics" :key="item.class" class="count">
@@ -18,11 +18,11 @@
             <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
         </div>
 
-        <div style="background-color: #ffffff;">
-            <van-tabs v-model:active="activeTab" style="padding-top: 24px;" type="card" color="#617CF0" title-inactive-color="#333333" line-width="10px">
+        <div style="background-color: #ffffff">
+            <van-tabs v-model:active="activeTab" style="padding-top: 24px" type="card" color="#617CF0" title-inactive-color="#333333" line-width="10px">
                 <van-tab title="按接入Wi-Fi查看">
                     <!-- 终端列表折叠面板 -->
-                    <van-collapse v-model="activeNames" class="terminalList">
+                    <!-- <van-collapse v-model="activeNames" class="terminalList">
                         <van-collapse-item title="" v-for="item in allWifiDataValue" :key="item.name">
                             <template #title>
                                 <div class="wifiTitle">
@@ -35,7 +35,7 @@
                             </template>
 
                             <div class="alineItemsCenter">
-                                <!-- <svg-icon icon-class="ic_arrow" class="goApView"></svg-icon>  -->
+                                <svg-icon icon-class="ic_arrow" class="goApView"></svg-icon>
 
                                 <div class="linkToAp">
                                     <div class="paddingBottom5">
@@ -58,40 +58,39 @@
                                 <svg-icon icon-class="ic_arrow" class="goApView"></svg-icon>
                             </div>
                         </van-collapse-item>
-                    </van-collapse>
+                    </van-collapse> -->
+                    <terminal-collapse :wifiData="wifiData"></terminal-collapse>
                 </van-tab>
 
                 <van-tab title="按接入AP查看">
                     <van-collapse v-model="activeNamesAp" class="apList">
-                        <van-collapse-item title="" v-for="aps in allData" :key="aps.name">
+                        <van-collapse-item title="" v-for="(val, key) in wifiDataAp" :key="key">
                             <template #title>
                                 <div class="wifiTitle">
-                                    <span>AP: {{ aps.ap.name }}</span>
+                                    <span>AP: {{ key }}</span>
                                 </div>
-                                <span>终端总数： {{ aps.ap.numAll }} |</span>
-                                <span>2.4G终端： {{ aps.ap.num24 }} |</span>
-                                <span>5G终端： {{ aps.ap.num }}</span>
+                                <span>终端总数： 10 |</span>
+                                <span>2.4G终端： 5 |</span>
+                                <span>5G终端： 5</span>
                             </template>
 
-                            <div class="alineItemsCenter" v-for="item in aps.wifiData">
-                                <!-- <svg-icon icon-class="ic_arrow" class="goApView"></svg-icon>  -->
-
+                            <div class="alineItemsCenter" v-for="item in val" :key="item.ApName">
                                 <div class="linkToAp linksStyle">
                                     <div class="paddingBottom5">
-                                        <span>{{ item.Mac }}</span>
-                                        <div v-if="item.RadioID == 1" class="radioStyle24">2.4G</div>
+                                        <span>{{ item.MAC }}</span>
+                                        <div v-if="item.WireLessMode == 1" class="radioStyle24">2.4G</div>
                                         <div v-else class="radioStyle5">5G</div>
                                     </div>
                                     <div class="ipStyle paddingBottom5">
-                                        <span>IP地址：{{ item.address }}</span>
+                                        <span>IP地址：{{ item.IP }}</span>
                                     </div>
                                     <div>
                                         <span>接入WIFI：</span>
-                                        <router-link :to="{ path: '/Terminal/terminalDetail', query: { devName: item.link, devType: 'ap' } }" class="toAPdetail">
-                                            {{ item.link }}
+                                        <router-link :to="{ path: '/Terminal/terminalDetail', query: { devName: item.SSID, devType: 'ap' } }" class="toAPdetail">
+                                            {{ item.SSID }}
                                         </router-link>
                                         |
-                                        <span>连接时长：{{ item.time }}</span>
+                                        <span>连接时长：{{ item.CurrentUpTime }}</span>
                                     </div>
                                 </div>
                                 <svg-icon icon-class="ic_arrow" class="goApView"></svg-icon>
@@ -101,16 +100,16 @@
                 </van-tab>
             </van-tabs>
         </div>
-    </van-config-provider>
+    </div>
 </template>
 
 <script setup>
-import { defineStore } from "pinia"
-import { ref, getCurrentInstance, provide } from "vue"
+import { ref } from "vue"
 import { useI18n } from "vue-i18n"
-import BoxTitle from "../../components/BoxTitle"
+
 import HistoryTitle from "../Terminal/toHistoryTitle"
 import TerminalEchart from "./terminalEchart.vue"
+import TerminalCollapse from "./collapse.vue"
 
 const { t } = useI18n()
 const detailRouter = "/AP"
@@ -128,73 +127,116 @@ let value = ref("")
 let allWifiDataValue = []
 let allWifiDataTag = []
 
-let allData = [
+let wifiDataAp = {}
+
+// let allData = [
+//     {
+//         ap: { name: "AP1", numAll: "10", num24: "5", num: "5" },
+//         wifiData: [
+//             { Mac: "0000-0000-0000", RadioID: 1, address: "192.168.0.1", link: "wifi1", time: "10d:5h:10m" },
+//             { Mac: "0000-0000-0001", RadioID: 2, address: "192.168.0.2", link: "wifi2", time: "10d:5h:10m" },
+//             { Mac: "0000-0000-0002", RadioID: 1, address: "192.168.0.3", link: "wifi3", time: "10d:5h:10m" }
+//         ]
+//     },
+//     {
+//         ap: { name: "AP2", numAll: "10", num24: "5", num: "5" },
+//         wifiData: [
+//             { Mac: "0000-0000-0000", RadioID: 1, address: "192.168.0.1", link: "wifi1", time: "10d:5h:10m" },
+//             { Mac: "0000-0000-0001", RadioID: 2, address: "192.168.0.2", link: "wifi2", time: "10d:5h:10m" },
+//             { Mac: "0000-0000-0002", RadioID: 1, address: "192.168.0.3", link: "wifi3", time: "10d:5h:10m" }
+//         ]
+//     }
+// ]
+
+let wifiData = [
     {
-        ap: { name: "AP1", numAll: "10", num24: "5", num: "5" },
-        wifiData: [
-            { Mac: "0000-0000-0000", RadioID: 1, address: "192.168.0.1", link: "wifi1", time: "10d:5h:10m" },
-            { Mac: "0000-0000-0001", RadioID: 2, address: "192.168.0.2", link: "wifi2", time: "10d:5h:10m" },
-            { Mac: "0000-0000-0002", RadioID: 1, address: "192.168.0.3", link: "wifi3", time: "10d:5h:10m" }
-        ]
+        SSID: "wifi1",
+        modeAll: "10",
+        mode24: "5",
+        mode5: "5",
+        MAC: "0000-0000-0000",
+        WireLessMode: "1",
+        IP: "192.168.0.1",
+        ApName: "AP1",
+        CurrentUpTime: "10d:5h:10m"
     },
     {
-        ap: { name: "AP2", numAll: "10", num24: "5", num: "5" },
-        wifiData: [
-            { Mac: "0000-0000-0000", RadioID: 1, address: "192.168.0.1", link: "wifi1", time: "10d:5h:10m" },
-            { Mac: "0000-0000-0001", RadioID: 2, address: "192.168.0.2", link: "wifi2", time: "10d:5h:10m" },
-            { Mac: "0000-0000-0002", RadioID: 1, address: "192.168.0.3", link: "wifi3", time: "10d:5h:10m" }
-        ]
+        SSID: "wifi2",
+        modeAll: "10",
+        mode24: "5",
+        nmode5: "5",
+        MAC: "0000-0000-0001",
+        WireLessMode: "2",
+        IP: "192.168.0.2",
+        ApName: "AP2",
+        CurrentUpTime: "10d:5h:10m"
+    },
+    {
+        SSID: "wifi3",
+        modeAll: "10",
+        mode24: "5",
+        mode5: "5",
+        MAC: "0000-0000-0000",
+        WireLessMode: "2",
+        IP: "192.168.0.2",
+        ApName: "AP1",
+        CurrentUpTime: "10d:5h:10m"
     }
 ]
 
-// 所有AP
-for (let i = 0; i < allData.length; i++) {
-    // 所有AP下的WIFI
-    for (let j = 0; j < allData[i].wifiData.length; j++) {
-        let wifiName = allData[i].wifiData[j].link
+for (let i = 0; i < wifiData.length; i++) {
+    let apName = wifiData[i].ApName
 
-        if (!allWifiDataTag[wifiName]) {
-            allWifiDataTag[wifiName] = true
-            allWifiDataValue.push({ ...allData[i].ap, ...allData[i].wifiData[j] })
-        }
+    if (!wifiDataAp[apName]) {
+        wifiDataAp[apName] = []
+        wifiDataAp[apName].push(wifiData[i])
+    } else {
+        wifiDataAp[apName].push(wifiData[i])
     }
 }
-console.log("allWifiDataValue:" + allWifiDataValue)
 
-let wifiData = []
-let wifiDataAp = []
+// 所有AP
+// for (let i = 0; i < allData.length; i++) {
+//     // 所有AP下的WIFI
+//     for (let j = 0; j < allData[i].wifiData.length; j++) {
+//         let wifiName = allData[i].wifiData[j].link
 
-for (let i = 0; i < 80; i++) {
-    wifiData.push({
-        id: i + 1,
-        name: "wifi" + i,
-        numAll: i,
-        num24: i,
-        num: i,
-        RadioID: 2,
-        Mac: "0000-0000-000" + i,
-        address: "192.168.0." + i,
-        link: "AP" + i,
-        time: "10d:5h:10m"
-    })
-}
-for (let i = 0; i < 80; i++) {
-    wifiDataAp.push({
-        id: i + 1,
-        name: "AP" + i,
-        numAll: i,
-        num24: i,
-        num: i,
-        RadioID: 1,
-        Mac: "0000-0000-000" + i,
-        address: "192.168.0." + i,
-        link: "AP" + i,
-        time: "10d:5h:10m"
-    })
-}
+//         if (!allWifiDataTag[wifiName]) {
+//             allWifiDataTag[wifiName] = true
+//             allWifiDataValue.push({ ...allData[i].ap, ...allData[i].wifiData[j] })
+//         }
+//     }
+// }
+// console.log("allWifiDataValue:" + allWifiDataValue)
 
-let activeNames = ref([wifiData[0].name])
-const themeVars = {}
+// for (let i = 0; i < 80; i++) {
+//     wifiData.push({
+//         id: i + 1,
+//         name: "wifi" + i,
+//         numAll: i,
+//         num24: i,
+//         num: i,
+//         RadioID: 2,
+//         Mac: "0000-0000-000" + i,
+//         address: "192.168.0." + i,
+//         link: "AP" + i,
+//         time: "10d:5h:10m"
+//     })
+// }
+// for (let i = 0; i < 80; i++) {
+//     wifiDataAp.push({
+//         id: i + 1,
+//         name: "AP" + i,
+//         numAll: i,
+//         num24: i,
+//         num: i,
+//         RadioID: 1,
+//         Mac: "0000-0000-000" + i,
+//         address: "192.168.0." + i,
+//         link: "AP" + i,
+//         time: "10d:5h:10m"
+//     })
+// }
 </script>
 
 <style scoped>
@@ -378,17 +420,21 @@ const themeVars = {}
 .paddingTop5 {
     padding-top: 5px;
 }
-.terminalList .van-collapse-item__content {
+
+.toAPdetail {
+    color: #617cf0;
+}
+</style>
+
+<style>
+#terminalPage .terminalList .van-collapse-item__content {
     padding-top: 14px !important;
     padding-bottom: 14px !important;
 }
-.van-collapse-item__content {
+#terminalPage .van-collapse-item__content {
     background-color: #f7f7f7 !important;
     padding-right: 0px !important;
     padding-top: 0px !important;
     padding-bottom: 0px !important;
-}
-.toAPdetail {
-    color: #617cf0;
 }
 </style>

@@ -4,23 +4,25 @@
     <terminal-echart chartName="terminal-Chart!"></terminal-echart>
 
     <!-- -------AP页面---- -->
-    <div class="wifiHeader">
-        <span>AP列表</span>
-        <van-Search class="searchStyle" v-model="value" left-icon="none" placeholder="请输入AP名称、IP地址序列号或MAC地址" />
-        <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
-    </div>
-
-    <van-sticky :offset-top="38">
-        <div>
-            <Tabs v-model:active="active" swipeable color="#617CF0">
-                <Tab v-for="(item, index) in cardMenu" :title="item.title" :key="'menu' + index">
-                    <div class="deviceCardWrap" v-for="(card, index) in cardList" :key="'haha' + index">
-                        <ap-list :cardData="card" />
-                    </div>
-                </Tab>
-            </Tabs>
+    <div class="apPage">
+        <div class="wifiHeader">
+            <span>AP列表</span>
+            <van-Search class="searchStyle" v-model="value" left-icon="none" placeholder="请输入AP名称、IP地址序列号或MAC地址" />
+            <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
         </div>
-    </van-sticky>
+
+        <van-sticky :offset-top="38">
+            <div>
+                <Tabs v-model:active="active" swipeable color="#617CF0">
+                    <Tab v-for="(item, index) in cardMenu" :title="item.title" :key="'menu' + index">
+                        <div class="deviceCardWrap" v-for="(card, index) in cardList" :key="'haha' + index">
+                            <ap-list :cardData="card" />
+                        </div>
+                    </Tab>
+                </Tabs>
+            </div>
+        </van-sticky>
+    </div>
 
     <!-- <ap-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
         <van-cell v-for="item in list" :key="item" :title="item" @click="goDetail(item)" />
@@ -47,7 +49,7 @@ let onlineNum = ref(0)
 let offlineNum = ref(0)
 let active = ref(0)
 
-const detailRouter = "/AP"
+const detailRouter = "/History"
 const echartTitle = ref(t("AP.echartTitle"))
 let value = ref("")
 let cardMenu = [
@@ -141,12 +143,14 @@ list.value.push(1, 2, 3, 4, 5)
     display: flex;
     padding: 0 15px;
 }
-.van-tabs__line {
+</style>
+<style>
+.apPage .van-tabs__line {
     width: 115px !important;
     height: 2px !important;
     background: #617cf0 !important;
 }
-.van-cell {
+.apPage .van-cell {
     font-size: 11px !important;
 }
 </style>

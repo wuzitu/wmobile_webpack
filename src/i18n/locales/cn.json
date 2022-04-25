@@ -3,6 +3,8 @@
     "error": "错误",
     "emptyXml": "空的Xml",
     "SET_SUCCESS": "设置成功",
+    "SET_FAILED":"设置失败",
+    "CONFIRM_WINDOW":"确认弹窗",
     "NoMore": "没有更多了",
     "Apply": "确认",
     "Cancel": "取消",
@@ -14,6 +16,11 @@
     "allAP": "终端总数：",
     "online":"2.4G终端：",
     "offline":"5G终端：",
+    "WelcomeTxt1": "欢迎使用",
+    "WelcomeTxt2": "H3C无线产品",
+    "WelcomeBtn": "开始使用",
+    "Tips": "提示",
+    "LoginCloud": "云端管理",
     "MENU": {
         "initwlan": "欢迎页",
         "dashboard-side": "概览",
@@ -34,12 +41,8 @@
         "english": "English"
     },
     "DashBoard": {
-        "topology": "拓扑",
-        "map": "图表",
-        "switch":"交换机",
-        "online":"在线数",
-        "offline":"离线数",
-        "couldupdate":"可升级"
+        "topology": "我的网络",
+        "map": "图表"
     },
     "Password": {
         "account": "账号",
@@ -50,7 +53,8 @@
         "placeholder1": "请输入管理员密码",
         "placeholder2": "请输入密码的提示信息",
         "rules": "密码长度为10~63位，至少包括大写字母、小写字母、数字、符号中的两种，不能包含顺序或反序的admin",
-        "forget": "忘记密码"
+        "forget": "忘记密码",
+        "LoginForget": "忘记管理密码只能手动重置网络内的所有设备。"
     },
     "Network": {
         "title1": "设置上网方式",
@@ -68,7 +72,12 @@
         "assignmentStart": "分配起始地址",
         "assignmentTotal": "分配地址数",
         "onlineCfg": "上网配置",
-        "maxDnsTips": "最多创建6条DNS"
+        "maxDnsTips": "最多创建6条DNS",
+        "customMTU":"自定义MTU",
+        "port":"端口",
+        "switchWan":"切换为WAN",
+        "revise": "返回修改",
+        "submitInit": "！默认Wi-Fi名称已修改，确认下发后请重新连接新Wi-Fi"
     },
     "Wireless": {
         "title1": "设置Wi-Fi",
@@ -122,13 +131,17 @@
         "model":"型号",
         "sn":"序列号",
         "initVlanTips": "请输入VLAN ID（1-4094）",
-        "initVlanRemark": "请输入VLAN备注"
+        "initVlanRemark": "请输入VLAN备注",
+        "globalVlanId":"（全局）",
+        "dhcpClient":"DHCP客户端",
+        "devicePort":"设备与端口"
     },
     "Switch": {
         "title": "交换机列表",
         "all": "全部：",
         "online": "在线：",
-        "offline": "离线："
+        "offline": "离线：",
+        "linktime":"连接时长"
     },
     "Gateway": {
         "title": "网关列表",
@@ -150,7 +163,18 @@
         "legend4":"误码率",
         "legend5":"信道利用率",
         "before":"调整前",
-        "after":"调整后"
+        "after":"调整后",
+        "ajusttime":"调整时间：",
+        "reason":"原因",
+        "channelba":"信道前/后",
+        "powerba":"功率前/后",
+        "bandwidthba":"频宽前/后",
+        "loadBA":"负载率前/后",
+        "InterferenceBA":"干扰率前/后",
+        "retransmissionBA":"重传率前/后",
+        "bitErrorBA":"误码率前/后",
+        "channelUtilizationBA":"信道利用率前/后",
+        "searchPlaceholder":"请输入AP名称、IP地址、序列号或MAC地址"
     },
     "DevInfo":{
         "Backup":"备注",
@@ -208,21 +232,183 @@
         "vlanlist":"VLAN 列表",
         "pleaseinputvlan":"请输入VLAN ID (1-4094)",
         "upflow":"上行流量",
-        "downflow":"下行流量"
-    }, 
-    "Terminal": { 
+        "downflow":"下行流量",
+        "IfChangeStatus":"您是否确定切换端口状态？",
+        "IfChangeIsolate":"您是否确定切换隔离状态？",
+        "IfChangeAggretation":"您是否确定切换聚合状态？",
+        "IfChangePower":"您是否确定切换供电状态？",
+        "IfChangePortType":"您是否切换端口类型？",
+        "Empty":"暂无数据"
+    },
+    "Terminal": {
         "allAP": "终端总数：",
         "online":"2.4G终端：",
         "offline":"5G终端：",
         "echartTitle":"终端数量趋势",
-        "listTitle":"终端列表",  
-        "terminalName": "终端： "    
-    },   
-    "AP": { 
+        "listTitle":"终端列表",
+        "terminalName": "终端： "
+    },
+    "AP": {
         "echartTitle":"AP数量趋势",
         "listTitle":"终端列表",
         "all":"全部：",
         "online":"在线：",
         "offline":"离线："    
+    },
+    "guidedownloade": {
+        "download": "立即下载"
+    },
+    "SystemMenu": {
+        "loginTitle":"登录管理",
+        "loginAddr":"管理地址",
+        "loginPwd":"管理员密码",
+        "networkTitle":"网络管理",
+        "networkRest":"重置网络",
+        "autoManageDevice":"自动纳管新设备",
+        "serveTitle":"服务器管理",
+        "versionServe":"版本服务器",
+        "deviceTitle":"设备管理",
+        "deviceList":"设备列表" ,
+        "restTipsTitle":"网络重置",
+        "restTipsContent":"本操作会将网络内所有777设备恢复出厂并重启，重新进行自组网，需要再次进行开局配置，请确认",
+        "addrManage":{
+            "addrTitle":"修改管理地址",
+            "deviceTitle":"设备管理",
+            "oldAddr":"旧地址",
+            "newAddr":"新地址",
+            "addrPlaceholder":"请输入新的管理地址"
+        },
+        "pwd":{
+            "passTitleTips":"密码长度为10-63位，至少包括大写字母、小写字母、数字、符号中的两种，不能包含正序或反序的admin",
+            "pwdTitles":"管理员密码",
+            "oldPass":"旧密码",
+            "OPtips":"请输入旧管理密码",
+            "newPass":"新密码",
+            "NPtips":"请输入新管理密码",
+            "confirmPass":"确认新密码",
+            "CPtips":"请再次输入新管理密码",
+            "passTips":"密码提示",
+            "PTtips":"请输入密码的提示信息"
+        },
+        "tftp":{
+            "FTPtitle":"文件服务器设置",
+            "FTPtype":"文件服务器类型",
+            "FTPserve":"FTP服务器",
+            "serveTips":"请输入FTP文件服务器类型",
+            "FTPUname":"FTP用户名",
+            "unameTips":"请输入FTP用户名",
+            "FTPPass":"FTP密码",
+            "passTips":"请输入FTP密码",
+            "VPN":"VPN",
+            "vpnTips":"请输入VPN",
+            "FTPwork":"工作路径",
+            "FTPworkTips":"请输入工作路径"
+        },
+        "devicePage":{
+            "deviceTitle":"设备列表",
+            "seacherTips":"请输入设备名称或型号",
+            "All":"全部",
+            "GW":"网关",
+            "AC":"AC",
+            "Switch":"交换机",
+            "AP":"AP",
+            "selectAll":"全选",
+            "bthBtn":"批量操作",
+            "bthColse":"关闭自组网",
+            "bthColseContent":"请确认shi",
+            "bthUpgrade":"升级",
+            "bthReboot":"重启",
+            "bthSetF":"恢复出厂",
+            "bthDiagnosis":"诊断文件",
+            "noChooseTips":"提示",
+            "noChooseContent":"请先勾选要批量操作的设备",
+            "rfTips":"恢复出厂",
+            "rfHead":"请确认是否将已选中的",
+            "bthSetFText":"个设备恢复出厂配置并重启？",
+            "bthRebootText":"个设备重启？",
+            "bthUpgradeText":"个设备升级？",
+            "bthColseText":"个设备关闭自组网"
+
+        },
+        "deviceCard":{
+            "model":"型号",
+            "edition":"版本",
+            "Upgradeable":"可升级",
+            "setDeviceName":"设备名称设置",
+            "oldName":"旧名称:",
+            "newName":"新名称:",
+            "tips":"名称长度为1-12个字符",
+            "pleaceholder":"请输入设备名称"
+        }
+
+    },
+    "ConnectCloudNet": {
+        "CloudRegister": {
+        "rgisterTitleTip":"可以使用此账号登录cloudnet app或oasis.h3c.com",
+       "rgisterTitle":"注册云简账号",
+        "userName":"用户名",
+        "userNameTip":"请输入用户名",
+        "userNameRule":"6-32位，以字母开头包含字母数字下划线",
+        "verificationCode":"验证码",
+        "verificationCodeTip":"请求输入验证码",
+        "phoneNumber":"手机号",
+        "phoneNumberTip":"请输入手机号",
+        "phoneVerCode":"手机验证码",
+        "phoneVerCodeTip":"请输入手机验证码",
+        "getVerCode":"获取验证码",
+        "loginPassword":"登录密码",
+        "loginPasswdTip":"请输入8-32位登录密码",
+        "loginpasswdRule":"密码必须包含数字、字母以及特殊字符，长度为8-32位，不能包含空格和中文",
+        "confirmPassword":"确认密码",
+        "confirmPasswordTip":"请再次输入密码",
+        "completeRegistration":"完成注册"
+    },
+        "CloudLogin": {
+            "registerTips":"还没有云简账号，立即注册",
+            "login":"请输入用户名/手机号/密码",
+            "pass":"请输入登录密码",
+            "titleTips":"您将把以下设备注册到云简",
+            "placeTips":"设备上云",
+            "ACNum":"账号",
+            "brach":"分支",
+            "place":"场所",
+            "placeHolder":"请输入设备所在场所",
+            "deviceTitle":"设备列表",
+            "all":"全部",
+            "gate":"网关",
+            "AC":"AC",
+            "switch":"交换机",
+            "AP":"AP",
+            "model":"型号",
+            "serialNumber":"序列号"
+        }
+    },
+    "History": {
+        "historyData":"历史数据",
+        "AP": "AP",
+        "terminal": "终端",
+        "flow": "流量",
+        "quantityTrend": "AP数量趋势",
+         "APHistoryDta": "AP上下线历史数据",
+         "inputBoxPrompt": "请输入AP名称、IP地址、序列号和MAC地址",
+         "model": "型号",
+         "time": "时间",
+         "event": "事件",
+         "online": "上线",
+         "offline": "下线",
+         "gateway": "网关",
+         "hsupa": "上行速率",
+         "downRate": "下行速率",
+         "upDownTrafficData": "上下行流量数据",
+         "uplinkTraffic": "上行流量",
+         "downlinkTraffic": "下行流量",
+         "IPAddress": "IP地址",
+         "accessAP": "接入AP",
+         "accessWiFi": "接入Wi-Fi",
+         "teminalHistoryData": "终端上下线历史数据",
+         "trafficData": "上下行流量数据",
+         "terquantityTrend": "终端数量趋势",
+         "terinputBoxPrompt": "请输入终端名称、IP地址、序列号和MAC地址"
     }
+
 }

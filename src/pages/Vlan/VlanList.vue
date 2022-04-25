@@ -48,7 +48,7 @@ const delVlan = (name) => {
 
 const vlanDetails = () => {
     console.log("VLAN详情页面")
-    router.push("/WiFiDetails?vlanId=" + vlanListData.vlanId)
+    router.push("/VlanDetails?vlanId=" + vlanListData.vlanId)
 }
 </script>
 

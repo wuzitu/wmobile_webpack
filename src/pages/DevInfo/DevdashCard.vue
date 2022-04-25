@@ -62,6 +62,8 @@ let aPort = ref([
         width: 375px;
         height: auto;
         overflow: auto;
+        margin: 0;
+        padding: 0;
     }
 
 </style>

@@ -5,15 +5,23 @@
                 <van-cell>
                     <svg-icon icon-class="ic_close" class="closeStyle"></svg-icon>
                 </van-cell>
-                <van-cell>
-                    <router-link to="/InitWlan">{{ $t("MENU.initwlan") }}</router-link>
-                </van-cell>
                 <van-cell class="sidecell">
-                    <router-link to="/">{{ $t("MENU.dashboard-side") }}</router-link>
+                    <router-link to="/DashBoard">{{ $t("MENU.dashboard-side") }}</router-link>
                 </van-cell>
 
                 <van-collapse v-model="LanActive" accordion size="">
-                    <van-collapse-item :title="$t('MENU.network')" name="1" @click.stop="onLv1Click" style="font-size: 30px;">
+                    <van-collapse-item title="调试" name="0" @click.stop="onLv1Click" style="font-size: 30px">
+                        <van-cell>
+                            <router-link to="/" @click="menuClick" class="sidecell-cell">{{ $t("MENU.initwlan") }}</router-link>
+                        </van-cell>
+                        <van-cell>
+                            <router-link to="/connectCloudNet" @click="menuClick" class="sidecell-cell">connectCloudNet</router-link>
+                        </van-cell>
+                        <van-cell>
+                            <router-link to="/chat" @click="menuClick" class="sidecell-cell">chat</router-link>
+                        </van-cell>
+                    </van-collapse-item>
+                    <van-collapse-item :title="$t('MENU.network')" name="1" @click.stop="onLv1Click" style="font-size: 30px">
                         <van-cell>
                             <router-link to="/Online" @click="menuClick" class="sidecell-cell">{{ $t("MENU.online") }}</router-link>
                         </van-cell>
@@ -41,7 +49,7 @@
                     <router-link to="/Terminal">{{ $t("MENU.terminal") }}</router-link>
                 </van-cell>
                 <van-cell>
-                    <router-link to="/LAN">{{ $t("MENU.history") }}</router-link>
+                    <router-link to="/History">{{ $t("MENU.history") }}</router-link>
                 </van-cell>
                 <van-cell>
                     <router-link to="/System">{{ $t("MENU.system") }}</router-link>
@@ -55,10 +63,6 @@
                 <span class="s_line">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
                 <span class="en" lang="en" @click="changeLanguage('en')">English</span>
             </van-col>
-
-            <!-- <van-button v-for="locale in $i18n.availableLocales" :key="`locale-${locale}`" :value="locale" @click="changeLanguage(locale)">
-        {{ locale }}
-      </van-button> -->
         </div>
     </van-popup>
 </template>
@@ -66,10 +70,10 @@
 <script setup>
 import { ref, getCurrentInstance, inject } from "vue"
 import { useRouter } from "vue-router"
-import { List, Dialog } from "vant"
+import { Dialog } from "vant"
 const { proxy } = getCurrentInstance()
 const menuShow = inject("menuShow") // 接受父组件传值
-const LanActive = ref([])
+const LanActive = ref("")
 const router = useRouter()
 
 const menuClick = () => {
@@ -81,7 +85,6 @@ const onLv1Click = () => {
 const changeLanguage = (locale) => {
     proxy.$i18n.locale = locale
 }
-// const VanDialog = Dialog.Component
 
 const logClick = () => {
     Dialog.confirm({
@@ -115,14 +118,12 @@ const logClick = () => {
 }
 
 #nav a {
-    /* font-weight: bold; */
     color: #2c3e50;
 }
 #menu-link {
     width: 100%;
     height: 100%;
     display: flex;
-    /* align-items: center; */
     flex-direction: column;
 }
 #nav a.router-link-exact-active {
@@ -131,14 +132,10 @@ const logClick = () => {
 .sidecell-cell {
     width: 220px;
     height: 34px;
-    /* font-size: 16px; */
 }
 .sidecell a {
     font-size: 16px;
 }
-/* .sidecell span {
-  font-size: 30px;
-} */
 .closeStyle {
     width: 32px;
     height: 32px;

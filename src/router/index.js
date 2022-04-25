@@ -5,8 +5,18 @@ import DashBoard from "@/pages/Dashboard/Index.vue"
 const routes = [
     {
         path: "/",
+        name: "Welcome",
+        component: () => import("../pages/Welcome/Index")
+    },
+    {
+        path: "/DashBoard",
         name: "DashBoard",
         component: DashBoard
+    },
+    {
+        path: "/TopoChartDetail",
+        name: "TopoChartDetail",
+        component: () => import("../pages/Dashboard/TopoChartDetail")
     },
     // 网络模块
     {
@@ -51,6 +61,11 @@ const routes = [
         path: "/AddVlan",
         name: "AddVlan",
         component: () => import("../pages/Vlan/AddVlan")
+    },
+    {
+        path: "/VlanDetails",
+        name: "VlanDetails",
+        component: () => import("../pages/Vlan/VlanDetails")
     },
     // 设备模块
     {
@@ -133,6 +148,14 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ "../pages/RRM/Index")
     },
     {
+        path: "/RRM/Index2",
+        name: "RRM/Index2",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ "../pages/RRM/Index2")
+    },
+    {
         path: "/Gateway",
         name: "Gateway",
         // route level code-splitting
@@ -151,17 +174,22 @@ const routes = [
     {
         path: "/System",
         name: "System",
-        component: () => import("../pages/System/Index")
-    },
-    {
-        path: "/SysSet",
-        name: "SysSet",
-        component: () => import("../pages/System/SysSet")
-    },
-    {
-        path: "/SysDevice",
-        name: "SysDevice",
-        component: () => import("../pages/System/SysDevice")
+        redirect:"/System/SysMenu",
+        component: () => import("../pages/System/Index"),
+        children:[
+            {
+                path: "SysMenu",
+                component: () => import("../pages/System/SysMenu")
+            },
+            {
+                path: "SysSet",
+                component: () => import("../pages/System/SysSet")
+            },
+            {
+                path: "SysDevice",
+                component: () => import("../pages/System/SysDevice")
+            }
+        ]
     },
     {
         path: "/InitWlan",
@@ -174,6 +202,11 @@ const routes = [
         component: () => import("../pages/Login/Index")
     },
     {
+        path: "/GuideDownload",
+        name: "GuideDownload",
+        component: () => import("../pages/Login/GuideDownload")
+    },
+    {
         path: "/Terminal",
         name: "Terminal",
         component: () => import("../pages/Terminal/index")
@@ -182,6 +215,47 @@ const routes = [
         path: "/Terminal/terminalDetail",
         name: "terminalDetail",
         component: () => import("../pages/Terminal/terminalDetail")
+    },
+    {
+        path: "/History",
+        name: "History",
+        component: () => import("../pages/History/Index")
+    },
+    {
+        path: "/chat",
+        name: "chat",
+        component: () => import("../pages/System/chatsss"),
+        children:[
+            {
+                path: "System",
+                component: () => import("../pages/System/Index")
+            }
+        ]
+    },
+    {
+        path:"/connectCloudNet",
+        name: "connectCloudNet",
+        redirect:"/connectCloudNet/cloudLogin",
+        component: () => import("../pages/ConnectCloudNet/Index"),
+        children:[
+            {
+                path: "cloudLogin",
+                component: () => import("../pages/ConnectCloudNet/CloudLogin")
+            },
+            {
+                path: "cloudRegister",
+                component: () => import("../pages/ConnectCloudNet/CloudRegister")
+            },
+            {
+                path: "cloudConfirm",
+                component: () => import("../pages/ConnectCloudNet/CloudConfirm")
+            }
+        ]
+    },
+    {
+        path: "/History",
+        name: "History",
+        component: () => import("../pages/History/Index")
     }
 ]
 

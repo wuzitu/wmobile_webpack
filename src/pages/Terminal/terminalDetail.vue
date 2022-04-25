@@ -1,13 +1,15 @@
 <template>
     <box-title :titleName="titleValue">{{ name }}</box-title>
     <detail-list :listData="terminalData" />
+    <div class="buttonStyle">
+        <div ref="down" class="downButton" @click="downAp()">强制下线</div>
+        <div ref="back" class="activeButton" @click="backFrom()">返回</div>
+    </div>
 </template>
 
 <script setup>
-import { defineStore } from "pinia"
-import { ref, getCurrentInstance, provide, defineProps } from "vue"
+import { ref } from "vue"
 import { useI18n } from "vue-i18n"
-import { Cell, CellGroup, CellSize, CellProps, CellGroupProps, CellArrowDirection } from "vant"
 import BoxTitle from "../../components/BoxTitle"
 import DetailList from "./detailList"
 
@@ -16,7 +18,7 @@ const { t } = useI18n()
 let name = "0000-0001-0021"
 const titleValue = ref(t("Terminal.terminalName"))
 
-let terminalData = { 
+let terminalData = {
     厂商: "小米",
     IP地址: "192.168.0.1",
     接入AP: { name: "AP1", url: "/AP" },
@@ -34,9 +36,47 @@ let terminalData = {
     累计上线次数: "1GB",
     累计在线时长: "2022-03-11 11:00:00"
 }
+
+const down = ref(null)
+const back = ref(null)
+
+function downAp() {
+    // down.value.removeClass("downButton")
+    // down.value.addClass("activeButton")
+}
+function backFrom() {
+    history.go(-1) //回到浏览器上一页。
+    // back.value.removeClass("downButton")
+    // back.value.addClass("activeButton")
+}
 </script>
 
 <style scoped>
+.buttonStyle {
+    background-color: #f7f7f7;
+    width: 100%;
+    height: 87px;
+    display: flex;
+    align-items: end;
+}
+.buttonStyle div {
+    width: 50%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    font-size: 16px;
+    font-family: PingFang SC;
+    font-weight: 500;
+}
+.downButton {
+    background-color: #ffffff !important;
+    color: #333333;
+}
+.activeButton {
+    background-color: #617cf0 !important;
+    color: #ffffff;
+}
+
 .viewButton {
     font-size: 14px;
     font-family: PingFang SC;
