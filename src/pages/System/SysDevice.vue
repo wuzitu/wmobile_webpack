@@ -1,12 +1,13 @@
 <template>
     <div class="height100">
-        <div class="stick van-hairline--bottom">
+        <van-sticky :offset-top="40" z-index="1">
             <BoxTitle>
                 <div class="deviceHeader">
                     <span>{{ RC('deviceTitle') }}</span>
                     <Search class="searchStyle" v-model="searchValue" left-icon="none"
-                        :placeholder="RC('seacherTips')" />
-                    <div>
+                        :placeholder="RC('seacherTips')"
+                        />
+                    <div @click="onSearch">
                         <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
                     </div>
                 </div>
@@ -14,11 +15,23 @@
             <Tabs v-model:active="active" swipeable color="#617CF0" @change="changeTabs">
                 <Tab v-for="(item, index) in cardMenu" :title="RC(item.title)" :key="'menu' + index"></Tab>
             </Tabs>
-        </div>
+        </van-sticky>
         <div class="cardContent">
             <div class="deviceCardWrap" v-for="card in cardList" :key="card">
                 <Checkbox checked-color="#617CF0" class="singleCheck" v-model="card.isCheak"></Checkbox>
-                <device-card :cardData="card" @cardEdit="editCardFun" />
+                <Cards
+                    :title="card.company"
+                    :online="true"
+                    :type="card.isOnline == 'true' ?'online':''"
+                    :device="card.decice"
+                    rightIcon="ic_edit"
+                    @handleCard="systemCard"
+                    @cardEditTitle="editCardFun">
+                    <CardLine>
+                        <cardItemVue label="型号：">{{}}{{card.model}}</cardItemVue>
+                        <cardItemVue label="版本：">{{}}{{card.model}}</cardItemVue>
+                    </CardLine>
+                </Cards>
             </div>
         </div>
         <div class="bottomWrap">
@@ -37,41 +50,32 @@
                 </Popover>
             </div>
         </div>
-        <Dialogs v-model:show="upgradeShow" :title="RC('bthUpgrade')" :confirmButtonText="t('Apply')"
-            :cancelButtonText="t('Cancel')" confirmButtonColor="#617CF0" show-cancel-button @confirm="confirmUpgrade">
-            <div class="upgradeWraps">
-                <div>
-                    <RadioGroup v-model="upgradeCheck" checked-color="#617CF0" direction="horizontal">
-                        <Radio name="1">在线升级</Radio>
-                        <p class="upgradeTipsStyle">自动从云简平台获取推荐版本升级。</p>
-                        <Radio name="2">本地升级</Radio>
-                        <p class="upgradeTipsStyle">从本地文件服务器获取版本升级。</p>
-                    </RadioGroup>
-                </div>
-                <p class="confrimTips">{{RC("rfHead") + checkList.length + RC("bthUpgradeText")}}</p>
-            </div>
-        </Dialogs>
+        <UpgradePopUpVue v-model:upgradeShow="upgradeShows" :isNeedBack="true" @confirm="confirmUpgrade"/>
     </div>
 </template>
 
 <script setup>
 import { ref, watch } from "vue"
 import BoxTitle from "@/components/BoxTitle.vue"
-import { Search, Tab, Dialog, Tabs, Checkbox, Popover, RadioGroup, Radio } from "vant"
-import DeviceCard from "./DeviceCard.vue"
+import { Search, Tab, Dialog, Tabs, Checkbox, Popover, Sticky } from "vant"
+import Cards from "@/components/Card/ShowCard.vue"
+import cardItemVue from "@/components/Card/CardItem.vue"
+import CardLine from "@/components/Card/CardLine.vue"
+import UpgradePopUpVue from "@/components/UpgradePopUp.vue"
 import { useI18n } from "vue-i18n"
-const Dialogs = Dialog.Component
+import { useRouter } from "vue-router"
+import { json } from "body-parser"
+const router = useRouter()
 const { t } = useI18n()
 let RC = (str) => {
     return t("SystemMenu.devicePage." + str)
 }
-let upgradeShow = ref(false)
+
+let upgradeShows = ref(false)
 const upgradeCheck = ref("1")
 const cardMenu = ref([
     {
         title: "All"
-    }, {
-        title: "GW"
     }, {
         title: "AC"
     }, {
@@ -80,6 +84,8 @@ const cardMenu = ref([
         title: "AP"
     }
 ])
+// smartMc/DeviceList
+// {"method":"smartmc_topo_device","session_key":"session_key","lang":"cn"}: 
 const showPopover = ref(false)
 const checkAll = ref(false)
 const actions = ref([
@@ -109,8 +115,8 @@ const cardList = ref([
         model: "MSG330-W",
         softver: "r3405",
         isUpGrade: "false"
-
-    }, {
+    },
+    {
         isCheak: false,
         company: "H3C",
         decice: "AP",
@@ -118,8 +124,8 @@ const cardList = ref([
         model: "wap662",
         softver: "r3405",
         isUpGrade: "true"
-
-    }, {
+    },
+    {
         isCheak: false,
         company: "H3C",
         decice: "网关",
@@ -127,43 +133,6 @@ const cardList = ref([
         model: "MSG330-W",
         softver: "r3405",
         isUpGrade: "false"
-
-    }, {
-        isCheak: false,
-        company: "H3C",
-        decice: "AC",
-        isOnline: "true",
-        model: "MSG330-W",
-        softver: "r3405",
-        isUpGrade: "false"
-
-    }, {
-        isCheak: false,
-        company: "H3C",
-        decice: "网关",
-        isOnline: "true",
-        model: "MSG330-W",
-        softver: "r3405",
-        isUpGrade: "false"
-
-    }, {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机",
-        isOnline: "true",
-        model: "MSG330-W",
-        softver: "r3405",
-        isUpGrade: "false"
-
-    }, {
-        isCheak: false,
-        company: "H3C",
-        decice: "AP",
-        isOnline: "false",
-        model: "wap662",
-        softver: "r3405",
-        isUpGrade: "true"
-
     }
 
 ])
@@ -202,32 +171,51 @@ const batchDevice = (list, type) => {
     let context = RC("rfHead") + list.length + RC("bth" + type.type + "Text")
     console.log(titleText,context)
     switch (type.type) {
-    case "Upgrade":
-        upgradeShow.value = true
-        break
-    case "Diagnosis":
-        break
-    default:
-        Dialog.confirm({
-            title: titleText,
-            message: context,
-            confirmButtonColor: "#617CF0",
-            confirmButtonText: t("Apply"),
-            cancelButtonText: t("Cancel")
-        }).then(() => { 
-            
-        })
-        break
+        case "Upgrade":
+            upgradeShows.value = true
+            break
+        case "Diagnosis":
+            break
+        default:
+            // Dialog.confirm({
+            //     title: titleText,
+            //     message: context,
+            //     confirmButtonColor: "#617CF0",
+            //     confirmButtonText: t("Apply"),
+            //     cancelButtonText: t("Cancel")
+            // }).then(() => {
+
+            // })
+            break
     }
 }
 //升级处理
-const confirmUpgrade = () => {
-
+const confirmUpgrade = (val) => {
+    console.log(val.upgradeCheck)
 }
+
+const systemCard = (data) => {
+    console.log(data.title)
+    const devData = {
+        "decice": "AC",
+        "devName": "网关",
+        "devType": "网关",
+        "onlinetime": "123456789201215",
+        "ipaddress":"1.1.1.1",
+        "devStatus":2,
+        "macaddress":"0000-0000-00001",
+        "devSN":"123456789201215",
+        "devVersion":"R2401",
+        "isSupportPoe":true,
+        "isSupportWan":true
+    }
+    router.push({ name:"DevInfo",query:{ "content":JSON.stringify(data) } })
+}
+
 watch(() => cardList, (newVal) => {
     let checklen = 0
     checkList.value = []
-    newVal.value.map((item, index) => {
+    newVal.value.map((item) => {
         if (item.isCheak) {
             checkList.value.push(item)
             checklen++
@@ -236,12 +224,33 @@ watch(() => cardList, (newVal) => {
     checklen == newVal.value.length ? checkAll.value = true : checkAll.value = false
 }, { deep: true }
 )
+// watch(() => router, (newVal) => {
+//     let checklen = 0
+//     checkList.value = []
+//     newVal.value.map((item) => {
+//         if (item.isCheak) {
+//             checkList.value.push(item)
+//             checklen++
+//         }
+//     })
+//     checklen == newVal.value.length ? checkAll.value = true : checkAll.value = false
+// }, { deep: true }
+// )
+const onSearch = () => {
+    let keyword = searchValue.value
+    let searchData = []
+    cardList.value.map(( v , k ) => {
+        let jsonData = JSON.stringify(v)
+        if(jsonData.indexOf(keyword) > -1) {
+            searchData.push(v)
+        }
+    })
+    // console.log(searchData)
+    cardList.value = searchData
+}
 </script>
 
 <style scoped>
->>>.van-search__field {
-    padding: 0 !important;
-}
 
 .deviceHeader {
     padding-right: 10px;
@@ -279,7 +288,7 @@ watch(() => cardList, (newVal) => {
 }
 
 .cardContent {
-    margin-top: 95px;
+    /* margin-top: 95px; */
 }
 
 .searchStyle {
@@ -331,15 +340,6 @@ watch(() => cardList, (newVal) => {
     width: 80px;
     padding: 0 10px;
 }
-.upgradeWraps{
-    padding: 0 15px;
-}
-.upgradeTipsStyle{
-    margin: 5px 0;
-    margin-left: 30px;
-    color: #666666;
-}
-.confrimTips{
-    text-align: center;
-}
+
+
 </style>

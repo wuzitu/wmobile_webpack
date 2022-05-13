@@ -1,7 +1,7 @@
 <template>
     <history-title :titleName="echartTitle" :detailRouter="detailRouter"></history-title>
-    <!-- <ap-chart chartName="Ap-Chart!"></ap-chart> -->
-    <terminal-echart chartName="terminal-Chart!"></terminal-echart>
+    <ap-chart :xaxisData="xData" :yaxisData="yData"></ap-chart>
+    <!-- <terminal-echart chartName="terminal-Chart!"></terminal-echart> -->
 
     <!-- -------AP页面---- -->
     <div class="apPage">
@@ -15,13 +15,25 @@
             <div>
                 <Tabs v-model:active="active" swipeable color="#617CF0">
                     <Tab v-for="(item, index) in cardMenu" :title="item.title" :key="'menu' + index">
-                        <div class="deviceCardWrap" v-for="(card, index) in cardList" :key="'haha' + index">
-                            <ap-list :cardData="card" />
+                        <div class="deviceCardWrap" v-for="(card, index) in cardList" :key="'haha' + index" @click="goDetail(card)">
+                            <ap-list :cardData="card" v-on:clickEdit="getApName" />
                         </div>
                     </Tab>
                 </Tabs>
             </div>
         </van-sticky>
+
+        <van-dialog title="重命名" v-model:show="dialogShow" show-cancel-button>
+            <van-form @submit="onSubmit">
+                <van-cell-group inset>
+                    <van-field v-model="oldName" name="原名称" label="原名称" readonly="true" />
+                    <van-field v-model="newName" name="新名称" label="新名称" placeholder="请输入新名称" :rules="[{ required: true, message: '请输入新名称' }]" />
+                </van-cell-group>
+                <!-- <div style="margin: 16px">
+                    <van-button round block type="primary" native-type="submit">提交</van-button>
+                </div> -->
+            </van-form>
+        </van-dialog>
     </div>
 
     <!-- <ap-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
@@ -30,28 +42,34 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import ApChart from "./ApChart.vue"
+import { getCurrentInstance, ref, onMounted } from "vue"
+import ApChart from "@/components/TrendChart.vue"
 // import { List as ApList2 } from "vant"
 import { ConfigProvider, Tab, Tabs, Sticky, Popover } from "vant"
-import { useRouter, useRoute } from "vue-router"
+import { useRouter } from "vue-router"
 import { useI18n } from "vue-i18n"
 import HistoryTitle from "../../pages/Terminal/toHistoryTitle"
 import TerminalEchart from "../../pages/Terminal/terminalEchart.vue"
 import ApList from "./ApList.vue"
 
-const { t } = useI18n()
 const router = useRouter()
-const route = useRoute()
+
+const { t } = useI18n()
+const { proxy } = getCurrentInstance()
+const $req = proxy.$req
 
 let allNum = ref(0)
 let onlineNum = ref(0)
 let offlineNum = ref(0)
 let active = ref(0)
-
+let xData = ref([])
+let yData = ref([])
 const detailRouter = "/History"
 const echartTitle = ref(t("AP.echartTitle"))
 let value = ref("")
+let dialogShow = ref(false)
+let oldName = ref("")
+let newName = ref("")
 let cardMenu = [
     {
         title: t("AP.all") + allNum.value
@@ -64,46 +82,66 @@ let cardMenu = [
     }
 ]
 
-let cardList = ref([
-    {
-        //isCheak: false,
-        company: "H3C",
-        decice: "AP",
-        isOnline: "false",
-        IPAddress: "1.1.1.1",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        // isCheak: false,
-        company: "H3C",
-        decice: "AP",
-        isOnline: "false",
-        IPAddress: "1.1.1.2",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        //isCheak: false,
-        company: "H3C",
-        decice: "AP",
-        isOnline: "true",
-        IPAddress: "1.1.1.3",
-        linkTimes: "20d:5h:10m"
-    }
-])
+let clickData = {}
+let cardList = ref([])
+
+function getApName(name) {
+    clickData = name
+    dialogShow.value = true
+    oldName.value = name.HostName
+}
+
+function onFailed() {
+    console.log("修改失败")
+}
+function onSubmit() {
+    // 一些校验
+    // let oDeviceList = $req.getTableInstance("DeviceList")
+
+    //修改交换机名
+    let oBase = $req.getTableInstance("Base")
+    oBase.addRows({ HostName: newName })
+    let sXml = $req.makeEditChannelXml("edit-config", [oBase], "merge")
+    let oEditChannel = $req.getTableInstance("EditChannel")
+    oEditChannel.addRows({ TargetType: "single", TCId: clickData.Id, Save: true, XmlRequest: sXml })
+    $req.action([oEditChannel], { onSuccess: onMounted, onFailed: onFailed })
+}
 
 const goDetail = (item) => {
     pushWithQuery(item)
 }
 function pushWithQuery(query) {
     router.push({
-        path: `/DevInfo/AP/${query}`,
-        query: {
-            ...route.query
+        name: "DevInfo",
+        params: {
+            ...query
         }
     })
 }
 const list = ref([])
 list.value.push(1, 2, 3, 4, 5)
+
+onMounted(async () => {
+    let oOnlineAP = $req.getTableInstance("OnlineAPHistory", { count: "1000" })
+    let oDeviceList = $req.getTableInstance("DeviceList")
+    oDeviceList.addFilter({ type: "AP" })
+
+    await $req.getBulk(oOnlineAP).then((data) => {
+        let aOnlineAP = $req.getTableRows("OnlineAPHistory", data)
+
+        for (let i = 0; i < aOnlineAP.length; i++) {
+            xData.value.push(aOnlineAP[i].Time)
+            yData.value.push(aOnlineAP[i].APCount)
+        }
+    })
+
+    await $req.getAll(oDeviceList).then((data) => {
+        let aDeviceList = $req.getTableRows("DeviceList", data)
+        for (let i = 0; i < aDeviceList.length; i++) {
+            cardList.value.push(aDeviceList[i])
+        }
+    })
+})
 </script>
 <style scoped>
 .wifiHeader {

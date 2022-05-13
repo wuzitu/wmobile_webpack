@@ -36,7 +36,7 @@ if(sModel == "poe")
 {
     sTitle = "PoE"
 }else{
-    sTitle = t("DevInfo.interface") + t("DevInfo.config")
+    sTitle = t("DevInfo.PoeInftConfig")
 }
 let aPort = ref([
     { "name":"G1/0/1","type":"LAN","status":"1","isolate":"0","aggretation":"0","powerup":"0","PVID":"1","vlanid":"2","inrate":"0.02","outrate":"0.54","inerror":"1000","outerror":"110" },

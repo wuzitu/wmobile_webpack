@@ -2,39 +2,42 @@
     <div class="cardWrap">
         <div class="title">
             <span>
-                <span class="company">{{ cards.company }}</span>
-                <span class="model" :class="cards.isOnline == 'true' ? 'isRun' : 'noRun'">{{ cards.decice }}</span>
+                <span class="company">H3C</span>
+                <span class="model" :class="cards.Status == '1' ? 'isRun' : 'noRun'">{{ cards.HostName }}</span>
             </span>
-            <svg-icon icon-class="ic_edit" class="iconStyle" @click="clickEdit"></svg-icon>
+            <svg-icon icon-class="ic_edit" class="iconStyle" @click.stop="clickEdit(cards)"></svg-icon>
         </div>
         <p>
-            <span>IP：{{ cards.IPAddress }}</span>
-            <span class="lineSpan">连接时长：{{ cards.linkTimes }}</span>
+            <span>IP：{{ cards.IpAddress }}</span>
+            <!-- <span class="lineSpan">连接时长：{{ cards.linkTime }}</span> -->
+            <span class="lineSpan">连接时长：20h:30min:20s</span>
         </p>
     </div>
 </template>
 
 <script setup>
-import { defineProps } from "vue"
+import { defineProps, defineEmits } from "vue"
 import { useRouter } from "vue-router"
 const router = useRouter()
 const cardData = defineProps({ cardData: Object })
+const emit = defineEmits(["clickEdit"])
 const cards = cardData.cardData
-const clickEdit = () => {
-    const devData = {
-        devName: cards.decice,
-        devType: cards.decice,
-        onlinetime: cards.linkTimes,
-        ipaddress: cards.IPAddress,
-        devStatus: 2,
-        macaddress: "0000-0000-00001",
-        devSN: "123456789201215",
-        devVersion: "R2401",
-        isSupportPoe: true,
-        isSupportWan: true
-    }
+const clickEdit = (value) => {
+    // const devData = {
+    //     devName: cards.decice,
+    //     devType: cards.decice,
+    //     onlinetime: cards.linkTimes,
+    //     ipaddress: cards.IPAddress,
+    //     devStatus: 2,
+    //     macaddress: "0000-0000-00001",
+    //     devSN: "123456789201215",
+    //     devVersion: "R2401",
+    //     isSupportPoe: true,
+    //     isSupportWan: true
+    // }
     // router.push({ path:`/DevInfo/${devData.devName}/${devData.devType}`})
-    router.push({ name: "DevInfo", params: devData })
+    // router.push({ name: "DevInfo", params: devData })
+    emit("clickEdit", value)
 }
 </script>
 

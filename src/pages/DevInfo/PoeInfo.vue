@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref,defineProps } from "vue"
+import { ref,defineProps ,getCurrentInstance } from "vue"
 import { useI18n } from "vue-i18n"
 import { useRoute } from "vue-router"
 import BoxTitle from "@/components/BoxTitle"
@@ -75,10 +75,13 @@ const router = useRoute()
 console.log(router.params)
 const { t } = useI18n()
 
+const { proxy } = getCurrentInstance()
+
+
 const props = defineProps(["coreData"])
-const sMaxPowerTitle = t("DevInfo.max") + t("DevInfo.powerup") + t("DevInfo.power")
-const sCusumePowerTitle = t("DevInfo.consume") + t("DevInfo.power")
-const sAveragePowerTitle = t("DevInfo.average") + t("DevInfo.power")
+const sMaxPowerTitle = t("DevInfo.PowerupMax")
+const sCusumePowerTitle = t("DevInfo.PowerConsume")
+const sAveragePowerTitle = t("DevInfo.PowerAverage")
 
 let coreData = ref({ ...props.coreData }) || ref({})
 coreData = ref({

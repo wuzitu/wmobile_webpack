@@ -3,17 +3,30 @@
 <svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 72 72" style="enable-background:new 0 0 72 72;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:url(#SVGID_1_);}
-	.st1{fill:#FFFFFF;}
+	.st0{clip-path:url(#SVGID_2_);}
+	.st1{fill:url(#SVGID_3_);}
+	.st2{fill:#FFFFFF;}
 </style>
-<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="36" y1="72" x2="36" y2="-9.094947e-13">
-	<stop  offset="0" style="stop-color:#58C3A5"/>
-	<stop  offset="1" style="stop-color:#64D9BF"/>
-</linearGradient>
-<circle class="st0" cx="36" cy="36" r="36"/>
-<path class="st1" d="M38.5,41.3c-2,0-4-0.8-5.5-2.3c-0.4-0.4-0.4-1.1,0-1.5c0.4-0.4,1.1-0.4,1.5,0c2.2,2.2,5.8,2.2,8,0l7.7-7.7
-	c2.2-2.2,2.2-5.8,0-8c-2.2-2.2-5.8-2.2-8,0l-6.5,6.5c-0.4,0.4-1.1,0.4-1.5,0c-0.4-0.4-0.4-1.1,0-1.5l6.5-6.5c3-3,8-3,11,0s3,8,0,11
-	L44,39C42.5,40.5,40.5,41.3,38.5,41.3L38.5,41.3L38.5,41.3z M25.8,54c-2,0-4-0.8-5.5-2.3c-3-3-3-8,0-11L28,33c3-3,8-3,11,0
-	c0.4,0.4,0.4,1.1,0,1.5c-0.4,0.4-1.1,0.4-1.5,0c-2.2-2.2-5.8-2.2-8,0l-7.7,7.7c-2.2,2.2-2.2,5.8,0,8c2.2,2.2,5.8,2.2,8,0l6.5-6.5
-	c0.4-0.4,1.1-0.4,1.5,0c0.4,0.4,0.4,1.1,0,1.5l-6.5,6.5C29.8,53.2,27.8,54,25.8,54L25.8,54z"/>
+<g>
+	<defs>
+		<rect id="SVGID_1_" width="72" height="72"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+	</clipPath>
+	<g class="st0">
+		
+			<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="36" y1="2" x2="36" y2="70" gradientTransform="matrix(1 0 0 -1 0 72)">
+			<stop  offset="0" style="stop-color:#58C3A5"/>
+			<stop  offset="1" style="stop-color:#64D9BF"/>
+		</linearGradient>
+		<circle class="st1" cx="36" cy="36" r="34"/>
+		<path class="st2" d="M38.4,41c-1.9,0-3.8-0.8-5.2-2.2c-0.4-0.4-0.4-1,0-1.4c0.4-0.4,1-0.4,1.4,0c2.1,2.1,5.5,2.1,7.6,0l7.3-7.3
+			c2.1-2.1,2.1-5.5,0-7.6c-2.1-2.1-5.5-2.1-7.6,0l-6.1,6.1c-0.4,0.4-1,0.4-1.4,0c-0.4-0.4-0.4-1,0-1.4l6.1-6.1
+			c2.8-2.8,7.6-2.8,10.4,0s2.8,7.6,0,10.4l-7.3,7.3C42.1,40.3,40.3,41,38.4,41L38.4,41L38.4,41z M26.4,53c-1.9,0-3.8-0.8-5.2-2.2
+			c-2.8-2.8-2.8-7.6,0-10.4l7.3-7.3c2.8-2.8,7.6-2.8,10.4,0c0.4,0.4,0.4,1,0,1.4c-0.4,0.4-1,0.4-1.4,0c-2.1-2.1-5.5-2.1-7.6,0
+			l-7.3,7.3c-2.1,2.1-2.1,5.5,0,7.6c2.1,2.1,5.5,2.1,7.6,0l6.1-6.1c0.4-0.4,1-0.4,1.4,0c0.4,0.4,0.4,1,0,1.4l-6.1,6.1
+			C30.1,52.2,28.3,53,26.4,53L26.4,53z"/>
+	</g>
+</g>
 </svg>

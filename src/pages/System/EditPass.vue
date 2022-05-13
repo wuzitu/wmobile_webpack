@@ -1,75 +1,65 @@
 <template>
     <div>
         <Form @submit="onSubmit">
-            <van-cell-group
-                :title="RC('passTitleTips')"
-                :theme-vars="themeVars"
-            >
+            <van-cell-group :title="RC('passTitleTips')" :theme-vars="themeVars">
                 <box-title :titleName="RC('pwdTitles')"></box-title>
-                <Field
-                    v-model="pldPwd"
-                    name="pldPwd"
-                    type="password"
-                    :label="RC('oldPass')"
-                    :placeholder="RC('OPtips')"
-                    required
-                    :rules="[{ validator: validatorMessage, trigger: 'onChange', label: 'pldPwd' }]"
-                />
-                <Field
-                    v-model="newPwd"
-                    type="password"
-                    name="newPwd"
-                    :label="RC('newPass')"
-                    required
+                <password-field v-model="newPwd" name="newPwd" :label="RC('newPass')" required
                     :placeholder="RC('NPtips')"
-                    :rules="[{ validator: validatorMessage, trigger: 'onChange', label: 'newPwd' }]"
-                />
-                <Field
-                    v-model="againPwd"
-                    type="password"
-                    name="againPwd"
-                    :label="RC('confirmPass')"
-                    :placeholder="RC('CPtips')"
-                    required
-                    :rules="[{ validator: validatorMessage, trigger: 'onChange', label: 'againPwd' }]"
-                />
-                <Field
-                    v-model="pwdTips"
-                    type="text"
-                    name="pwdTips"
-                    :label="RC('passTips')"
-                    :placeholder="RC('PTtips')"
-                />
+                    :rules="[{ validator: validatorPassword, trigger: 'onChange', label: 'newPwd' }]"
+                    :error-message="passwdErr" @blur="onBlur"/>
+                <password-field v-model="againPwd" name="againPwd" :label="RC('confirmPass')"
+                    :placeholder="RC('CPtips')" required
+                    :rules="[{ validator: validatorPassword, trigger: 'onChange', label: 'againPwd' }]"
+                    :error-message="confirmPasswdErr" @blur="onBlur"/>
+                <Field v-model="pwdTips" type="text" name="pwdTips" :label="RC('passTips')"
+                    :placeholder="RC('PTtips')" />
             </van-cell-group>
         </Form>
-        <BottomButtonVue @submit="onSubmit"/>
+        <BottomButtonVue @submit="onSubmit" />
     </div>
 </template>
 <script setup>
-import { defineEmits,ref } from "vue"
+import { defineEmits, ref } from "vue"
 import BottomButtonVue from "./BottomButton.vue"
 import { Field, Form } from "vant"
 import BoxTitle from "@/components/BoxTitle.vue"
+import PasswordField from "@/components/PasswordField.vue"
 import { useI18n } from "vue-i18n"
 const { t } = useI18n()
 let RC = (str) => {
     return t("SystemMenu.pwd." + str)
 }
 const emit = defineEmits(["submit"])
-const pldPwd = ref("")
 const newPwd = ref("")
 const againPwd = ref("")
 const pwdTips = ref("")
+const passwdErr = ref("")
+const confirmPasswdErr = ref("")
+let reg = /^(?![\d]+$)(?![a-z]+$)(?![A-Z]+$)(?![_!@#$%|^&*`~()+='"\-\[\]<>{},.\\\/:;]+$)[\da-zA-z_!@#$%|^&*`~()+='"\-\[\]<>{},.\\\/:;]{10,63}$/
+
+
+// 提交密码
 const onSubmit = (values) => {
     emit("submit", { values })
     //   console.log();
 }
-const validatorMessage = (val, r) => {
-    let label = r.label
-    let reg = /([0-9]+[a-z]+[A-Z]+).{10,63}/
-    console.log(val, reg.test(val))
-    return "校验不通过"
+const validatorPassword = (val) => {
+    if (reg.test(val) == false || val.indexOf("admin") != -1 || val.indexOf("nimda") != -1) {
+        return RC("passTitleTips")
+    }
 }
+// const validatorConfirmPasssword = (val) => {
+//     if (reg.test(val) == false || val.indexOf("admin") != -1 || val.indexOf("nimda") != -1) {
+//         return RC("passTitleTips")
+//     }
+// }
+
+const onBlur = () => {
+    if (reg.test(newPwd.value) != false && reg.test(againPwd.value) != false) {
+        newPwd.value != againPwd.value ? confirmPasswdErr.value = RC("identicalPwdErr") : confirmPasswdErr.value = ""
+    }
+}
+
 
 const themeVars = {
     cellGroupTitleColor: "#666666",

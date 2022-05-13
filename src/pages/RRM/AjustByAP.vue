@@ -1,49 +1,49 @@
 <template>
     <div class="">
         <van-collapse v-model="activeNames0">
-            <van-collapse-item v-for="(item, index) in oData.ajustDataByAP" :name="index">
+            <van-collapse-item v-for="(value, key, index) in oData.ajustDataByAP" :name="index">
                 <template #title>
                     <div class="ajusttimestyle1">
                         <span class="circle"></span>
-                        <span @click="jumpAPDetail(item.APName)" class="apcolor">{{ item.APname }}</span>
+                        <span @click="jumpAPDetail(key)" class="apcolor">{{ key }}</span>
                     </div>
                 </template>
                 <van-collapse v-model="activeNames">
-                    <van-collapse-item v-for="(item1, index1) in item.ajustdatas" :name="index + '' + index1">
+                    <van-collapse-item v-for="(item1, index1) in value" :name="index + '' + index1">
                         <template #title>
-                            <div>{{ t("RRM.ajusttime") }}{{ item1.time }}</div>
+                            <div>{{ t("RRM.ajusttime") }}{{ item1.ChangeTime }}</div>
                         </template>
                         <div class="contents">
                             <div class="toggle">
                                 <span class="toggleleft">Radio</span>
-                                <span class="toggleright">{{ item1.radio }}</span>
+                                <span class="toggleright">Radio{{ item1.RadioID }}</span>
                             </div>
                             <div class="toggle">
                                 <span class="toggleleft">{{ t("RRM.reason") }}</span>
-                                <span class="toggleright">{{ item1.reason }}</span>
+                                <span class="toggleright">{{ item1.ReasonBitMap }}</span>
                             </div>
                             <div class="toggle">
                                 <span class="toggleleft">{{ t("RRM.channelba") }}</span>
                                 <span class="toggleright">
-                                    <span class="before">{{ item1.chalbefore }}</span>
+                                    <span class="before">{{ item1.ChlNumBef }}</span>
                                     /
-                                    <span class="after">{{ item1.chalafter }}</span>
+                                    <span class="after">{{ item1.ChlNumAft }}</span>
                                 </span>
                             </div>
                             <div class="toggle">
                                 <span class="toggleleft">{{ t("RRM.powerba") }}</span>
                                 <span class="toggleright">
-                                    <span class="before">{{ item1.powerbefore }}</span>
+                                    <span class="before">{{ item1.PwrLvlBef }}</span>
                                     /
-                                    <span class="after">{{ item1.powerafter }}</span>
+                                    <span class="after">{{ item1.PwrLvlAft }}</span>
                                 </span>
                             </div>
                             <div class="toggle special">
                                 <span class="toggleleft">{{ t("RRM.bandwidthba") }}</span>
                                 <span class="toggleright">
-                                    <span class="before">{{ item1.bwbefore }}</span>
+                                    <span class="before">{{ item1.BandwidthBef }}</span>
                                     /
-                                    <span class="after">{{ item1.bwafter }}</span>
+                                    <span class="after">{{ item1.BandwidthAft }}</span>
                                 </span>
                             </div>
                         </div>

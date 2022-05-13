@@ -1,45 +1,59 @@
 <template>
-    <div class="cardWrap" @click="clickCardWrap">
-        <div class="title">
-            <span>
-                <span class="company">{{ cards.company }}</span>
-                <span class="model" :class="cards.isOnline == 'true' ? 'isRun' : 'noRun'">{{ cards.decice }}</span>
-            </span>
-            <svg-icon icon-class="ic_edit" class="iconStyle" @click="clickEdit"></svg-icon>
+    <div class="cardWrap">
+        <div class="title" @click="clickCardWrap">
+            <div>
+                <span class="company">{{ cards.HostName }}</span>
+                <span class="model" :class="cards.Status == 1 ? 'isRun' : 'noRun'">{{ cards.decice }}</span>
+            </div>
+            <p>
+                <span>IP：{{ cards.IpAddress }}</span>
+                <span class="lineSpan">{{ t("Switch.linktime") }}：{{ cards.StandTime }}</span>
+            </p>
         </div>
-        <p>
-            <span>IP：{{ cards.IPAddress }}</span>
-            <span class="lineSpan">{{ t("Switch.linktime") }}：{{ cards.linkTimes }}</span>
-        </p>
+
+        <div @click="cardEdit">
+            <svg-icon icon-class="ic_edit" class="iconStyle"></svg-icon>
+        </div>
+        <Dialogs v-model:show="show" :title="RC('setDeviceName')" :confirmButtonText="t('Apply')" :cancelButtonText="t('Cancel')" confirmButtonColor="#617CF0" show-cancel-button @confirm="editNameFun" @cancel="cancel">
+            <van-cell-group inset>
+                <Field v-model="cards.HostName" :label="RC('oldName')" readonly />
+                <Field v-model="newName" :label="RC('newName')" :placeholder="RC('pleaceholder')" />
+            </van-cell-group>
+        </Dialogs>
     </div>
 </template>
 
 <script setup>
-import { defineProps, watch, reactive, toRef } from "vue"
+import { defineProps, ref, watch, reactive, toRef } from "vue"
 import { useRouter } from "vue-router"
 import { useI18n } from "vue-i18n"
+import { Dialog, Field } from "vant"
+const Dialogs = Dialog.Component
+const show = ref(false)
 const { t } = useI18n()
 const router = useRouter()
 const cardData = defineProps({ cardData: Object })
 const cards = toRef(cardData, "cardData")
-
-const clickEdit = () => {}
-
+const emit = defineEmits(["cardEdit"])
+const newName = ref("")
+let RC = (str) => {
+    return t("SystemMenu.deviceCard." + str)
+}
+const cardEdit = () => {
+    show.value = true
+    newName.value = ""
+}
 const clickCardWrap = () => {
-    const devData = {
-        devName: cards.value.decice,
-        devType: cards.value.decice,
-        onlinetime: cards.value.linkTimes,
-        ipaddress: cards.value.IPAddress,
-        devStatus: 2,
-        macaddress: "0000-0000-00001",
-        devSN: "123456789201215",
-        devVersion: "R2401",
-        isSupportPoe: true,
-        isSupportWan: true
-    }
-    // router.push({ path:`/DevInfo/${devData.devName}/${devData.devType}`})
-    router.push({ name: "DevInfo", params: devData })
+    // router.push({ name: "DevInfo", params: { "content":JSON.stringify(cards.value) } })
+    router.push({ path: "/DevInfo", query: { "content":JSON.stringify(cards.value) } })
+}
+const editNameFun = () => {
+    show.value = true
+    emit("cardEdit", { cards: cards.value, newName: newName.value })
+}
+const cancel = () => {
+    show.value = false
+    newName.value = ""
 }
 </script>
 
@@ -52,10 +66,12 @@ const clickCardWrap = () => {
     background: #ffffff;
     padding: 10px;
     flex: 1;
+    display: flex;
+    justify-content: space-between;
 }
 .title {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: space-between;
 }
 p {

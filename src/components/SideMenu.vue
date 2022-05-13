@@ -6,13 +6,16 @@
                     <svg-icon icon-class="ic_close" class="closeStyle"></svg-icon>
                 </van-cell>
                 <van-cell class="sidecell">
-                    <router-link to="/DashBoard">{{ $t("MENU.dashboard-side") }}</router-link>
+                    <router-link to="/">{{ $t("MENU.dashboard-side") }}</router-link>
                 </van-cell>
 
                 <van-collapse v-model="LanActive" accordion size="">
-                    <van-collapse-item title="调试" name="0" @click.stop="onLv1Click" style="font-size: 30px;">
+                    <van-collapse-item title="调试" name="0" @click.stop="onLv1Click" style="font-size: 30px">
                         <van-cell>
-                            <router-link to="/" @click="menuClick" class="sidecell-cell">{{ $t("MENU.initwlan") }}</router-link>
+                            <router-link to="/Welcome" @click="menuClick" class="sidecell-cell">{{ $t("MENU.initwlan") }}</router-link>
+                        </van-cell>
+                        <van-cell>
+                            <router-link to="/Login" @click="menuClick" class="sidecell-cell">{{ $t("Login") }}</router-link>
                         </van-cell>
                         <van-cell>
                             <router-link to="/connectCloudNet" @click="menuClick" class="sidecell-cell">connectCloudNet</router-link>
@@ -21,7 +24,7 @@
                             <router-link to="/chat" @click="menuClick" class="sidecell-cell">chat</router-link>
                         </van-cell>
                     </van-collapse-item>
-                    <van-collapse-item :title="$t('MENU.network')" name="1" @click.stop="onLv1Click" style="font-size: 30px;">
+                    <van-collapse-item :title="$t('MENU.network')" name="1" @click.stop="onLv1Click" style="font-size: 30px">
                         <van-cell>
                             <router-link to="/Online" @click="menuClick" class="sidecell-cell">{{ $t("MENU.online") }}</router-link>
                         </van-cell>
@@ -71,6 +74,7 @@
 import { ref, getCurrentInstance, inject } from "vue"
 import { useRouter } from "vue-router"
 import { Dialog } from "vant"
+import Cookies from "js-cookie"
 const { proxy } = getCurrentInstance()
 const menuShow = inject("menuShow") // 接受父组件传值
 const LanActive = ref("")
@@ -83,7 +87,9 @@ const onLv1Click = () => {
     console.log("LV1click")
 }
 const changeLanguage = (locale) => {
+    Cookies.set("lang", locale)
     proxy.$i18n.locale = locale
+    window.location.reload()
 }
 
 const logClick = () => {
@@ -131,10 +137,6 @@ const logClick = () => {
 }
 .sidecell-cell {
     width: 220px;
-    height: 34px;
-}
-.sidecell a {
-    font-size: 16px;
 }
 .closeStyle {
     width: 32px;
@@ -147,5 +149,19 @@ const logClick = () => {
 .van-cell a {
     display: block;
     width: 100%;
+    /* font-size: 30px; */
+}
+.sidecell-cell {
+    font-size: 14px;
+}
+.van-cell__value a,
+.van-cell__value .van-col {
+    font-size: 16px;
+}
+:deep(.van-collapse .van-cell__title span) {
+    font-size: 16px;
+}
+:deep(.van-collapse-item .sidecell-cell) {
+    font-size: 14px;
 }
 </style>

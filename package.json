@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "crypto-js": "^4.1.1",
     "echarts": "^5.3.2",
+    "html2canvas": "^1.4.1",
     "jquery": "^3.6.0",
     "js-cookie": "^3.0.1",
     "pinia": "^2.0.12",
@@ -20,7 +22,8 @@
     "vue": "^3.0.0",
     "vue-echarts": "^6.0.2",
     "vue-i18n": "^9.1.0",
-    "vue-router": "^4.0.0-0"
+    "vue-router": "^4.0.0-0",
+    "x2js":"^3.4.3"
   },
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^3.0.0",

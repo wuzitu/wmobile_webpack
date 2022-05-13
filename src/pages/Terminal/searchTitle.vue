@@ -1,7 +1,7 @@
 <template>
     <div class="wifiHeader">
         <span>终端列表</span>
-        <van-Search class="searchStyle" v-model="value" left-icon="none" placeholder="请输入终端名称、IP地址或MAC地址" />
+        <van-Search class="searchStyle" v-model="value" left-icon="none" placeholder="请输入WI-FI名称、IP地址或MAC地址" />
         <svg-icon icon-class="ic_search" class="iconRight"></svg-icon>
     </div>
 </template>

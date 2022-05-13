@@ -41,6 +41,7 @@
         "no-duplicate-imports": 2,
         "no-duplicate-case": 2,
         "semi": [2, "never"],
-        "camelcase": 2
+        "camelcase": 2,
+        "vue/no-mutating-props": "off"
     }
 }

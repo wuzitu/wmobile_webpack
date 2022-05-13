@@ -1,48 +1,48 @@
 <template>
     <div class="wrap_bytime">
         <van-collapse v-model="activeNames0">
-            <van-collapse-item v-for="(item, index) in oData.ajustDataByTime" :name="index">
+            <van-collapse-item v-for="(value, key, index) in oData.ajustDataByTime" :name="index">
                 <template #title>
                     <div class="ajusttimestyle1">
                         <span class="circle"></span>
-                        {{ t("RRM.ajusttime") }}{{ item.ajustTime }}
+                        {{ t("RRM.ajusttime") }}{{ key }}
                     </div>
                 </template>
                 <van-collapse v-model="activeNames">
-                    <van-collapse-item v-for="(item1, index1) in item.ajustdatas" :name="index + '' + index1">
+                    <van-collapse-item v-for="(item1, index1) in value" :name="index + '' + index1">
                         <template #title>
                             <div>
-                                <span @click="jumpAPDetail(item.APName)" class="apcolor">{{ item1.APName }}</span>
-                                :radio{{ item1.radio }}
+                                <span @click="jumpAPDetail(item.APName)" class="apcolor">{{ item1.ApName }}</span>
+                                :Radio{{ item1.RadioID }}
                             </div>
                         </template>
                         <div class="contents">
                             <div class="toggle">
                                 <span class="toggleleft">{{ t("RRM.reason") }}</span>
-                                <span class="toggleright">{{ item1.reason }}</span>
+                                <span class="toggleright">{{ item1.ReasonBitMap }}</span>
                             </div>
                             <div class="toggle">
                                 <span class="toggleleft">{{ t("RRM.channelba") }}</span>
                                 <span class="toggleright">
-                                    <span class="before">{{ item1.chalbefore }}</span>
+                                    <span class="before">{{ item1.ChlNumBef }}</span>
                                     /
-                                    <span class="after">{{ item1.chalafter }}</span>
+                                    <span class="after">{{ item1.ChlNumAft }}</span>
                                 </span>
                             </div>
                             <div class="toggle">
                                 <span class="toggleleft">{{ t("RRM.powerba") }}</span>
                                 <span class="toggleright">
-                                    <span class="before">{{ item1.powerbefore }}</span>
+                                    <span class="before">{{ item1.PwrLvlBef }}</span>
                                     /
-                                    <span class="after">{{ item1.powerafter }}</span>
+                                    <span class="after">{{ item1.PwrLvlAft }}</span>
                                 </span>
                             </div>
                             <div class="toggle special">
                                 <span class="toggleleft">{{ t("RRM.bandwidthba") }}</span>
                                 <span class="toggleright">
-                                    <span class="before">{{ item1.bwbefore }}</span>
+                                    <span class="before">{{ item1.BandwidthBef }}</span>
                                     /
-                                    <span class="after">{{ item1.bwafter }}</span>
+                                    <span class="after">{{ item1.BandwidthAft }}</span>
                                 </span>
                             </div>
                         </div>
@@ -60,8 +60,6 @@ import { useRouter } from "vue-router"
 const router = useRouter()
 const { t } = useI18n()
 let oData = defineProps({ ajustDataByTime: Object })
-
-console.log(oData.ajustDataByTime)
 const activeNames = ref(["aa"])
 const activeNames0 = ref(["bb"])
 let jumpAPDetail = (apname) => {

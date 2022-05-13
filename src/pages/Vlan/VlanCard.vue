@@ -16,16 +16,7 @@
                 <field :label="t('Vlan.addressMask')" :placeholder="vlanInfo.addressMask" required></field>
                 <field :label="t('Vlan.lease')" :placeholder="t('Vlan.defaultLease')" required  is-link  @click="showLeasePopup"></field>
                 <van-popup v-model:show="leaseShow" position="bottom" :style="{ height: '50%' }">
-                <van-datetime-picker
-                    v-model="currentDate"
-                    type="datetime"
-                    title="选择时间"
-                    :min-date="minDate"
-                    :max-date="maxDate"
-                    @confirm="onConfirmLease"
-                    @cancel="onCancelLease"
-                    @change="onChangeLease"
-                />
+                 <van-datetime-picker v-model="currentDate" type="datetime" title="选择时间" :min-date="minDate" :max-date="maxDate" :formatter="formatter" @confirm="onConfirmLease" @cancel="onCancelLease" @change="onChangeLease" />
                 </van-popup>
                 <field :label="t('Vlan.addressAssignment')" placeholder="50%"></field>
                 <div class="button-box">
@@ -63,9 +54,28 @@ const vlanEdit = () => {
 }
 
 const leaseShow = ref(false)
+//time st
 const currentDate = ref(new Date())
 const minDate = new Date(2020, 0, 1)
 const maxDate = new Date(2025, 10, 1)
+const formatter = (type, val) => {
+    if (type === "year") {
+        return `${val}年`
+    }
+    if (type === "month") {
+        return `${val}月`
+    }
+    if (type === "day") {
+        return `${val}日`
+    }
+    if (type === "hour") {
+        return `${val}时`
+    }
+    if (type === "minute") {
+        return `${val}分`
+    }
+    return val
+}
 const onConfirmLease = (value, index) => {
     Toast(`当前值: ${value}, 当前索引: ${index}`)
     leaseShow.value = false
@@ -77,6 +87,7 @@ const onCancelLease = () => {
     Toast("取消")
     leaseShow.value = false
 }
+// time en
 const showLeasePopup = () => {
     leaseShow.value = true
 }

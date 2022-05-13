@@ -6,6 +6,7 @@
         :placeholder="props.placeholder"
         :right-icon="passwordEye"
         :required="props.required"
+        :error-message="props.errorMessage"
         @click-right-icon="inputTypeSwitch"
         @update:model-value="onUpdate"
     >
@@ -51,6 +52,10 @@ const props = defineProps({
     required: {
         type: Boolean,
         default: true
+    },
+    errorMessage: {
+        type: String,
+        default: ""
     }
 })
 
@@ -60,6 +65,7 @@ const emit = defineEmits(["changePassword"])
 const onUpdate = (value) => {
     emit("changePassword", value)
 }
+
 </script>
 
 <style scoped>
@@ -67,5 +73,8 @@ const onUpdate = (value) => {
         width: 18px;
         height: 18px;
         vertical-align: -3px;
+    }
+    :deep(.van-field__left-icon) {
+        margin-right: 0;
     }
 </style>

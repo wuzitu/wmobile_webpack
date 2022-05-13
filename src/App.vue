@@ -20,7 +20,7 @@ export default {
     },
     watch: {
         $route() {
-            if (this.$route.path === "/"
+            if (this.$route.path === "/Welcome"
             || this.$route.path === "/InitWlan"
             || this.$route.path === "/Login"
             || this.$route.path === "/GuideDownload") {

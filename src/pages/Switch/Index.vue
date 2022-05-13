@@ -1,22 +1,21 @@
 <template>
     <div class="height100">
-        <box-title :titleName="switchTitle"></box-title>
         <!-- <van-sticky :offset-top="38"> -->
-        <div>
+        <div class="stick">
+            <box-title :titleName="switchTitle"></box-title>
             <Tabs v-model:active="active" swipeable color="#617CF0" @click="changeTab(active)">
-                <Tab v-for="(item, index) in cardMenu" :title="item.title" :key="'menu' + index">
-                    <div class="deviceCardWrap" v-for="(card, index) in cardList" :key="'haha' + index">
-                        <device-card :cardData="card" />
-                    </div>
-                </Tab>
+                <Tab v-for="(item, index) in cardMenu" :title="item.title" :key="'menu' + index"></Tab>
             </Tabs>
+        </div>
+        <div class="deviceCardWrap" v-for="(card, index) in cardList" :key="'haha' + index">
+            <device-card :cardData="card" @cardEdit="editCardFun" />
         </div>
         <!-- </van-sticky> -->
     </div>
 </template>
 
 <script setup>
-import { ref, reactive } from "vue"
+import { ref, reactive, getCurrentInstance } from "vue"
 import { useI18n } from "vue-i18n"
 import { Search, ConfigProvider, Image as VanImage, Tab, Tabs, Sticky, Checkbox, Popover, CheckboxGroup } from "vant"
 import DeviceCard from "@/pages/Switch/DeviceCard.vue"
@@ -27,190 +26,126 @@ const switchTitle = t("Switch.title")
 const all = t("Switch.all")
 const online = t("Switch.online")
 const offline = t("Switch.offline")
-let allNum = ref(0)
-let onlineNum = ref(0)
-let offlineNum = ref(0)
-
-let allList = [
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机1",
-        isOnline: "false",
-        IPAddress: "1.1.1.1",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机2",
-        isOnline: "false",
-        IPAddress: "1.1.1.2",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机3",
-        isOnline: "true",
-        IPAddress: "1.1.1.3",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机4",
-        isOnline: "true",
-        IPAddress: "1.1.1.4",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机5",
-        isOnline: "false",
-        IPAddress: "1.1.1.5",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机6",
-        isOnline: "true",
-        IPAddress: "1.1.1.6",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机7",
-        isOnline: "true",
-        IPAddress: "1.1.1.7",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机8",
-        isOnline: "true",
-        IPAddress: "1.1.1.8",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机9",
-        isOnline: "false",
-        IPAddress: "1.1.1.9",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机10",
-        isOnline: "true",
-        IPAddress: "1.1.1.10",
-        linkTimes: "20d:5h:10m"
-    }
-]
-let onlineList = [
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机3",
-        isOnline: "true",
-        IPAddress: "1.1.1.3",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机4",
-        isOnline: "true",
-        IPAddress: "1.1.1.4",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机6",
-        isOnline: "true",
-        IPAddress: "1.1.1.6",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机7",
-        isOnline: "true",
-        IPAddress: "1.1.1.7",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机8",
-        isOnline: "true",
-        IPAddress: "1.1.1.8",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机10",
-        isOnline: "true",
-        IPAddress: "1.1.1.10",
-        linkTimes: "20d:5h:10m"
-    }
-]
-let offLineList = [
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机1",
-        isOnline: "false",
-        IPAddress: "1.1.1.1",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机2",
-        isOnline: "false",
-        IPAddress: "1.1.1.2",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机5",
-        isOnline: "false",
-        IPAddress: "1.1.1.5",
-        linkTimes: "20d:5h:10m"
-    },
-    {
-        isCheak: false,
-        company: "H3C",
-        decice: "交换机9",
-        isOnline: "false",
-        IPAddress: "1.1.1.9",
-        linkTimes: "20d:5h:10m"
-    }
-]
-let cardMenu = [
-    {
-        title: all + allList.length
-    },
-    {
-        title: online + onlineList.length
-    },
-    {
-        title: offline + offLineList.length
-    }
-]
-
+const onSuccess = () => {}
+const onFailed = () => {}
+const editCardFun = (arr) => {
+    //{cards:{Id:"",HostName:'',....},newName:""}
+    //编码btoa() 解码atob()
+    console.log(arr)
+    let newName = arr.newName
+    let TCId = arr.cards.Id
+    //修改交换机名
+    let oBase = $req.getTableInstance("Base")
+    oBase.addRows({ HostName: newName })
+    let sXml = $req.makeEditChannelXml("edit-config", [oBase], "merge")
+    // console.log(sXml)
+    // sXml = "<rpc message-id='101' xmlns='urn:ietf:params:xml:ns:netconf:base:1.0'  xmlns:web='urn:ietf:params:xml:ns:netconf:base:1.0'>" + sXml + "</rpc>" //原来
+    // console.log(sXml)
+    // var strBase64 = btoa(sXml) //编码
+    console.log(sXml)
+    let oEditChannel = $req.getTableInstance("EditChannel")
+    oEditChannel.addRows({ TargetType: "single", TCId: TCId, Save: true, XmlRequest: sXml })
+    $req.action([oEditChannel], { onSuccess: onSuccess, onFailed: onFailed })
+}
+const { proxy } = getCurrentInstance()
+const $req = proxy.$req
+let allList = reactive([])
+let onlineList = reactive([])
+let offLineList = reactive([])
 const cardList = reactive([])
-cardList.push(...allList)
+let cardMenu = reactive([])
+const getConf = async () => {
+    //获取交换机
+    /*let oDeviceList = $req.getTableInstance("DeviceList")
+    oDeviceList.addFilter({ Type: "SW" })
+    let response = await $req.getAll([oDeviceList])
+    allList = $req.getTableRows("DeviceList", response)
+    for (let i = 0; i < allList.length; i++) {
+        if (allList[i].Status == "1") {
+            onlineList.push(allList[i])
+        } else {
+            offLineList.push(allList[i])
+        }
+    }*/
+
+    allList = [
+        {
+            Id: "1",
+            HostName: "H3C",
+            decice: "交换机",
+            Status: 1,
+            IpAddress: "1.1.1.1",
+            StandTime: "20d:5h:10m"
+        },
+        {
+            Id: "2",
+            HostName: "H3C",
+            decice: "交换机",
+            Status: 1,
+            IpAddress: "1.1.1.1",
+            StandTime: "20d:5h:10m"
+        },
+        {
+            Id: "3",
+            HostName: "H3C",
+            decice: "交换机",
+            Status: 2,
+            IpAddress: "1.1.1.1",
+            StandTime: "20d:5h:10m"
+        },
+        {
+            Id: "4",
+            HostName: "H3C",
+            decice: "交换机",
+            Status: 2,
+            IpAddress: "1.1.1.1",
+            StandTime: "20d:5h:10m"
+        }
+    ]
+    onlineList = [
+        {
+            Id: "1",
+            HostName: "H3C",
+            decice: "交换机",
+            Status: 1,
+            IpAddress: "1.1.1.1",
+            StandTime: "20d:5h:10m"
+        },
+        {
+            Id: "2",
+            HostName: "H3C",
+            decice: "交换机",
+            Status: 1,
+            IpAddress: "1.1.1.1",
+            StandTime: "20d:5h:10m"
+        }
+    ]
+    offLineList = [
+        {
+            Id: "3",
+            HostName: "H3C",
+            decice: "交换机",
+            Status: 2,
+            IpAddress: "1.1.1.1",
+            StandTime: "20d:5h:10m"
+        },
+        {
+            Id: "4",
+            HostName: "H3C",
+            decice: "交换机",
+            Status: 2,
+            IpAddress: "1.1.1.1",
+            StandTime: "20d:5h:10m"
+        }
+    ]
+    let tempt1 = { title: all + allList.length }
+    let tempt2 = { title: online + onlineList.length }
+    let tempt3 = { title: offline + offLineList.length }
+    cardMenu.push(tempt1, tempt2, tempt3)
+    cardList.push(...allList)
+}
+getConf()
+
 const changeTab = (activenum) => {
     if (activenum == 0) {
         cardList.length = 0

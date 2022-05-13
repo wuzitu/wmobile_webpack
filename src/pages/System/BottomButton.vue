@@ -40,7 +40,7 @@ const onSubmit = () => {
 .seizeASeat{
     content: "";
     width: 100%;
-    height: 47px;
+    height: 55px;
 }
 .bottombuttonStyle{
     flex: 1;

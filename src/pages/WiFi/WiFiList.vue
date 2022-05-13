@@ -2,41 +2,56 @@
     <div class="cardWrap" @click="WifiDetails">
         <div class="title">
             <span>
-                <span class="wifi-name">{{ t("Wireless.name") }}: {{ wifiListData.name }}</span>
+                <span class="wifi-name">{{ t("Wireless.name") }}: {{ wifi.wifiData.name }}</span>
             </span>
-            <svg-icon icon-class="ic_deletewifi" class="iconStyle" @click.stop="delWifi(wifiListData.name)"></svg-icon>
+            <svg-icon icon-class="ic_deletewifi" class="iconStyle" @click.stop="delWifi(wifi.wifiData.name)"></svg-icon>
         </div>
         <p>
-            <span class="wifi-remarks">{{ t("Wireless.remarks") }}: {{ wifiListData.remarks }}</span>
+            <span class="wifi-remarks">{{ t("Wireless.remarks") }}: {{ wifi.wifiData.remarks }}</span>
         </p>
         <p>
-            <span class="wifi-remarks">{{ t("Wireless.wifiPwd") }}: {{ wifiListData.passwd }}</span>
-            <span class="lineSpan">VLAN ID：{{ wifiListData.vlanId }}</span>
+            <span class="wifi-remarks">{{ t("Wireless.wifiPwd") }}: {{ wifi.wifiData.passwd }}</span>
+            <span class="lineSpan">VLAN ID：{{ wifi.wifiData.vlanId }}</span>
         </p>
     </div>
 </template>
 
 <script setup>
-import { defineProps } from "vue"
+import { defineProps, getCurrentInstance, defineEmits} from "vue"
 import { useRouter } from "vue-router"
 import { useI18n } from "vue-i18n"
 import { Toast, Dialog } from "vant"
 
+const { proxy } = getCurrentInstance()
+const $req = proxy.$req
+
 const { t } = useI18n()
 const router = useRouter()
 const wifi = defineProps({ wifiData: Object })
-console.log(wifi)
-const wifiListData = wifi.wifiData
-console.log(wifiListData)
-
+// let wifiListData = wifi.wifiData //使用中间变量数据不更新
+const emit = defineEmits(["updateData"])
 const delWifi = (name) => {
-    console.log(name)
+    const beforeClose = (action) =>
+        new Promise((resolve) => {
+            setTimeout(async () => {
+                if (action === "confirm") {
+                    let oTemplate = $req.getTableInstance("GlobalServiceTemplates")
+                    oTemplate.addRows({Name:name})
+                    let response = await $req.set("remove", [oTemplate])
+                    emit("updateData", name)
+                    resolve(true)
+                } else {
+                    resolve(true)
+                }
+            }, 1000)
+        })
     Dialog.confirm({
         title: t("Wireless.delWifiTitle"),
         confirmButtonText: t("Apply"),
         cancelButtonText: t("Cancel"),
         confirmButtonColor: "#617CF0",
-        message: t("Wireless.delWifiMessage")
+        message: t("Wireless.delWifiMessage"),
+        beforeClose: beforeClose
     })
         .then(() => {
             Toast.success(t("Wireless.delWifiSuccess"))
@@ -48,7 +63,17 @@ const delWifi = (name) => {
 
 const WifiDetails = () => {
     console.log("Wi-Fi详情页面")
-    router.push("/WiFiDetails?vlanId=" + wifiListData.vlanId)
+    // router.push("/WiFiDetails?name=" + wifi.wifiData.name)
+    router.push({
+        name:"WiFiDetails",
+        params:{
+            name:wifi.wifiData.name,
+            remarks:wifi.wifiData.remarks,
+            encryption:wifi.wifiData.passwd,
+            hideStatus:"隐藏",
+            vlanId:wifi.wifiData.vlanId
+        }
+    })
 }
 </script>
 

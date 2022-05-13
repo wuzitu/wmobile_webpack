@@ -36,7 +36,8 @@ export default defineComponent({
         aLegend:Array,
         aTimes: Array,
         aUpLink: Array,
-        aDownLink:Array
+        aDownLink:Array,
+        sYName:String
     },
     setup: (props) => {
         const { t } = useI18n()
@@ -46,42 +47,40 @@ export default defineComponent({
         //aUpLink = ["00:00","03:00","06:00", "07:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","24:00"]
         //aDownLink = ["00:00","03:00","06:00", "07:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","24:00"]
         //aTimes = ["00:00","03:00","06:00", "07:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","24:00"]
+        let sYName = ref("")
         let sDown = ref("")
         let sUp = ref("")
         let aTimes = ref([])
-        let aUpLink = ref([])
-        let aDownLink = ref([])
-        // let bHaveUpLink = props.aUpLink && props.aUpLink.length
-        // let bHaveDownLink = props.aDownLink && props.aDownLink.length
-        // let bHaveTimes = props.aTimes && props.aTimes.length
+        let aUpLink = reactive([])
+        let aDownLink = reactive([])
         sDown.value = (props.aLegend && props.aLegend[0]) || "N/A"
         sUp.value = (props.aLegend && props.aLegend[1]) || "N/A"
         aTimes.value = props.aTimes || []
         aUpLink.value = props.aUpLink || []
         aDownLink.value = props.aDownLink || []
+        sYName.value = props.sYName || "Mbps"
         console.log("props update")
 
         let option = reactive({
-            width: "85%",
-            height: 142,
+            width: "100%",//echart 整体宽度
+            height: "100%",//echart 整体高度
             legend:{
-                orient:"horizontal",//ͼ������
-                right: "right",
-                top: "14rem",
-                bottom:0,
-                icon: "rect",
-                itemWidth:10,
-                itemHeight:10,
+                orient:"horizontal",//图例方向
+                right: 0,//图例位置
+                top:12,//图例位置
+                icon: "rect",//图例样式
+                itemWidth:10,//图例宽度
+                itemHeight:10,//图例高度
                 data:[
                     {
-                        name:sUp,
+                        name:sUp,//图例对应上部数据名称
                         itemStyle:{
                             color: "rgba(97, 124, 240, 1)"
                         },
                     },
                     {
-                        name:sDown,
-                        itemStyle:{
+                        name:sDown,//对应上面图例模块颜色
+                        itemStyle:{ //对应下面图例模块颜色
                             color:"rgba(255, 106, 56, 1)",
                         },
 
@@ -91,42 +90,43 @@ export default defineComponent({
             color: ["#EEEEEE"],
             tooltip : {
                 trigger: "axis",
-                axisPointer : { // ������ָʾ���������ᴥ����Ч
-                    type : "shadow" // Ĭ��Ϊֱ�ߣ���ѡΪ��'line' | 'shadow'
+                axisPointer : { // 坐标轴指示器，坐标轴触发有效
+                    type : "shadow" // 默认为直线，可选为：'line' | 'shadow'
                 }
             },
-            grid:[ //���ڵ���X���Լ�Y���λ��
+            grid:[ //坐标系内绘图网格，单个 grid 内最多可以放置上下两个 X 轴，左右两个 Y 轴 这里有三个grid
+                {
+                    show: false,//是否显示直角坐标系网络
+                    top:86,//bottom top  left right  坐标系位置
+                    left:0,
+                    right:0,
+                    height:42,
+                    containLabel: true
+                    // width:'100%',//height width 坐标系高和宽度
+                    // backgroundColor:"red"  背景色  只有show：true时有用 调位置好帮手
+                },
                 {
                     show: false,
-                    bottom: 50,
-                    top:102,
-                    left: "15rem",
-                    right: 0,
-                    containLabel: true,
-                    height: "42rem",
-                    width:"98%"
-                }, {
-                    show: false,
-                    top: "140rem",
-                    bottom:"20rem",
-                    left: "50rem",
+                    top: 150,
+                    left: 0,
                     right:0,
                     height: 0,
-                    zlevel:100
-                }, {
-                    show: false,
-                    top: 60,
-                    bottom: 50,
-                    left: "15rem",
-                    right:0,
                     containLabel: true,
-                    width:"98%",
-                    height: "42rem"
+                    width:"auto"
+                },
+                {
+                    show: false,
+                    top: 44,
+                    left:0,
+                    right:0,
+                    height:42,
+                    containLabel: true,//是否包含坐标系刻度标签
                 }
             ],
             xAxis : [
                 {
-                    type: "category",
+                    //对应
+                    type: "category",//x轴对应网格
                     position: "bottom",
                     axisLine: {
                         show: false,
@@ -141,42 +141,40 @@ export default defineComponent({
 
                 },
                 {
-                    gridIndex: 1,
+                    gridIndex: 1,//x轴对应网格 对应我们需要的x轴数据
                     type: "category",
                     position: "center",
-                    boundaryGap:false,
-                    splitNumber:5,
-                    max:11,
+                    boundaryGap:["100%","100%"],
+                    minInterval:0,
                     axisLine:{
-                        show: true,
-                        lineStyle:{
-                            type:"dashed",
-                            color:"#EEEEEE"
-                        }
+                        show: false,
+                        onZero:true
                     },
                     splitLine:{
-                        show: true,
+                        show: false,
+                        onZero:true,
                         lineStyle:{
                             type:"dashed",
                             color:"#EEEEEE"
                         }
                     },
                     axisTick: {
-                        show: true
+                        show: false
                     },
-                    zlevel:200,
                     axisLabel: {
                         show: true,
-                        align: "center",
+                        interval:2,
+                        showMaxLabel:true,
+                        showMinLabel:true,
                         textStyle: {
                             color: "#666666",
-                            fontSize: 12
+                            fontSize: "10px"
                         }
                     },
                     data: aTimes.value,
                 },
                 {
-                    gridIndex: 2,
+                    gridIndex: 2,//x轴对应网格
                     type: "category",
                     position: "top",
                     axisLine: {
@@ -192,39 +190,58 @@ export default defineComponent({
                 }
             ],
             yAxis : [
-                {
+                { //gridIndex 0
                     type: "value",
-                    inverse: true, //echarts Y�ᷭת����,
-                    position: "left", //λ������
+                    inverse: true, //echarts Y轴翻转属性, 对应向下翻转的y轴
+                    position: "left", //位置属性
+                    nameTextStyle:{
+                        color:"#999999",
+                        fontSize:"11px",
+                        fontFamily:"PingFang-SC-Medium",
+                        align: "right"
+                    },
+                    minInterval:100,
                     axisLabel: {
                         show: true,
                         textStyle: {
                             color: "#666666",
-                            fontSize: 12,
                         }
                     },
-                    splitNumber:1,
+                    splitNumber:2,
                     splitLine: {
                         show: true,
                         lineStyle: {
-                            color: "rgba(0,162,255,0.08)",
+                            color: "#EEEEEE",
                             width: 1,
+                            type:"dashed",
                         }
                     },
                     min:0,
                     max:100,
                 },
                 {
-                    gridIndex: 1, //��Ӧ����grid  ͨ��grid����X Y���λ��
+                    //gridIndex 1
+                    gridIndex: 1, //对应的是grid  通过grid设置X Y相对位置
                     show: false,
                 },
                 {
+                    name: sYName,
                     gridIndex: 2,
                     type: "value",
-                    position: "left", //˫Y��һ����תһ������ת
+                    position: "left", //双Y轴一个翻转一个不翻转
                     min:0,
                     max:100,
-                    splitNumber:1,
+                    splitNumber:2,
+                    minInterval:100,
+                    nameTextStyle:{
+                        color:"#999999",
+                        fontSize:"11px",
+                        fontFamily:"PingFang-SC-Medium",
+                        align: "right"
+                    },
+                    axisTick: {
+                        interval: 100
+                    },
                     axisLabel: {
                         show: true,
                         textStyle: {
@@ -235,15 +252,16 @@ export default defineComponent({
                     splitLine: {
                         show: true,
                         lineStyle: {
-                            color: "rgba(0,162,255,0.08)",
+                            color: "#EEEEEE",
                             width: 1,
+                            type:"dashed",
                         }
                     }
                 }
             ],
             series : [
                 {
-                    gridIndex:0, //ѡȡ�����õ���,����ͼ�������ϻ�������
+                    gridIndex:0, //选取调整好的轴,调整图形是向上还是向下
                     name:sUp.value,
                     type:"line",
                     data:aUpLink.value,
@@ -262,7 +280,7 @@ export default defineComponent({
                     }
                 },
                 {
-                    gridIndex:2, // ѡȡ�����õ���,����ͼ�������ϻ�������
+                    gridIndex:2, // 选取调整好的轴,调整图形是向上还是向下
                     name:sDown.value,
                     symbol: "none",
                     smooth: true,
@@ -289,16 +307,16 @@ export default defineComponent({
             option.xAxis[1].data = aTimes
             option.series[0].name = sUp
             option.series[1].name = sDown
-            option.series[0].data = aUpLink
-            option.series[1].data = aDownLink
+            option.series[0].data = aUpLink.value
+            option.series[1].data = aDownLink.value
 
 
             return { option }
-        
+
         }
         watch(props,(newValue,oldValue) => {
             updateChart(newValue,option)
-        });
+        })
         return { option }
     }
 })
@@ -308,9 +326,9 @@ export default defineComponent({
 
 <style scoped>
 .chart {
-  height: 180px;
-  margin-top: 0;
-  
+  height: 150px;
+  width: inherit;
+  margin-left: 16px;
 }
 
 .nodata {

@@ -98,10 +98,11 @@ let getDynUrl = function (sUrl) {
         sDynUrl = sDynUrl.replace(/\.j/, ".php")
     }
 
-    let s = -1 == sDynUrl.indexOf("?") ? "?" : "&"
+    // let s = -1 == sDynUrl.indexOf("?") ? "?" : "&"
     // console.log(process.env)
-    let sid = process.env.VUE_APP_SESSIONID || ""
-    sDynUrl += s + "sessionid=" + sid
+    // let sid = process.env.VUE_APP_SESSIONID || ""
+    // sDynUrl += s + "sessionid=" + sid
+    // sDynUrl += s
 
     return sDynUrl
 }
@@ -138,10 +139,32 @@ function getPathUrl(sAction) {
         return sRoot + sUrl
     }
 }
+
+function checkAddr(aSrc, aDest) {
+    let sSrc = aSrc[0],
+        sDest = aDest[0]
+    let aMask = [aSrc[1], aDest[1]]
+
+    let bFlag = true
+    let aSrcNew = sSrc.split(".")
+    let aDestNew = sDest.split(".")
+
+    for (let j = 0; j < aMask.length; j++) {
+        let aMaskStr = aMask[j].split(".")
+        if ((aDestNew[0] & aMaskStr[0]) == (aSrcNew[0] & aMaskStr[0]) && (aDestNew[1] & aMaskStr[1]) == (aSrcNew[1] & aMaskStr[1]) && (aDestNew[2] & aMaskStr[2]) == (aSrcNew[2] & aMaskStr[2]) && (aDestNew[3] & aMaskStr[3]) == (aSrcNew[3] & aMaskStr[3])) {
+            bFlag = false
+            break
+        }
+    }
+
+    return bFlag
+}
+
 export default {
     isEmptyObj,
     addComma,
     showError,
     getDynUrl,
-    getPathUrl
+    getPathUrl,
+    checkAddr
 }

@@ -1,24 +1,28 @@
 <template>
-    <box-title :titleName="titleName"></box-title>
-    <div class="init-password">
-        <password-field
+    <Form>
+        <box-title :titleName="titleName"></box-title>
+        <div class="init-password">
+            <password-field
+                class="anumsymbol"
                 :password="password"
                 :label="t('Password.password')"
                 :placeholder="t('Password.placeholder1')"
+                :rules="[{ validator: widget['passwordLogin'] }]"
                 @changePassword="userPassword"
-        ></password-field>
-        <field v-model="passwordTips" :label="t('Password.passwordTips')" :placeholder="t('Password.placeholder2')"></field>
-        <span class="password-rule">{{ t("Password.rules") }}</span>
-    </div>
+            ></password-field>
+            <span class="password-rule">{{ t("Password.rules") }}</span>
+        </div>
+    </Form>
 </template>
 
 <script setup>
 import { ref } from "vue"
-import { Field } from "vant"
+import { Form } from "vant"
 import { useI18n } from "vue-i18n"
 import BoxTitle from "../../components/BoxTitle"
 import PasswordField from "../../components/PasswordField"
-const password = ref(""), passwordTips = ref("")
+import widget from "../../frame/utils/widget"
+const password = ref("")
 
 const { t } = useI18n()
 const titleName = ref(t("Password.title1"))
@@ -27,13 +31,29 @@ const userPassword = (e) => {
     password.value = e
 }
 
+const mUserManager = () => {
+    const ncTable = {
+        NC: "StartProgress",
+        operation: "merge",
+        rows: [
+            {
+                Role: "TM",
+                Username: "admin",
+                Password: password.value
+            }
+        ]
+    }
+    return ncTable
+}
+
 const returnData = () => {
-    const data = {
-        password: password,
-        passwordTips: passwordTips
+    let ncList = []
+
+    if (widget.passwordLogin(password.value) == true) {
+        ncList = [mUserManager()]
     }
 
-    return data
+    return ncList
 }
 
 defineExpose({

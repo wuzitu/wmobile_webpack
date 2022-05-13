@@ -24,7 +24,7 @@
                         </div>
                     </template>
                     <template #right-icon>
-                        <Switch v-model="checked" @change="autoManageChange" size="24" />
+                        <Switch v-model="checked" @change="autoManageChange" disabled size="24" />
                     </template>
                 </van-cell>
             </van-cell-group>
@@ -47,12 +47,12 @@ const menu = ref([
     {
         title: "loginTitle",
         menuList: [
-            {
+            /*{
                 name: "loginAddr",
                 svgIcon: "ic_sys_ad",
                 type: "addressManage",
                 isLink: true
-            },
+            },*/
             {
                 name: "loginPwd",
                 svgIcon: "ic_sys_key",
@@ -110,26 +110,31 @@ const themeVars = {
 }
 const handlingEvents = (value) => {
     switch (value) {
-    case "networkRest":
-        Dialog.confirm({
-            title: RC("networkRest"),
-            confirmButtonText: t("Apply"),
-            cancelButtonText: t("Cancel"),
-            confirmButtonColor: "#617CF0",
-            message: RC("restTipsContent")
-        }).then(() => {
-            Toast.success("已确认")
-        }).catch(() => {
-            Toast.success("已取消")
-        })
-        break
-    case "equipmentList":
-        router.push("/System/SysDevice")
-        break
-    case "autoManage":
-        return
-    default:
-        router.push("/System/SysSet?type=" + value)
+        case "networkRest":
+            Dialog.confirm({
+                title: RC("networkRest"),
+                confirmButtonText: t("Apply"),
+                cancelButtonText: t("Cancel"),
+                confirmButtonColor: "#617CF0",
+                message: RC("restTipsContent")
+            }).then(() => {
+                // var oRestoreFactoryTable = Utils.Request.getTableInstance(NC.RestoreFactoryCfgTable);
+                // var oData = { RestoreFactoryDefault:"" };
+
+                // oRestoreFactoryTable.addRows(oData);
+                // Utils.Request.action(oRestoreFactoryTable);
+                            Toast.success("已确认")
+            }).catch(() => {
+                Toast.success("已取消")
+            })
+            break
+        case "equipmentList":
+            router.push("/System/SysDevice")
+            break
+        case "autoManage":
+            return
+        default:
+            router.push("/System/SysSet?type=" + value)
     }
 }
 
@@ -144,7 +149,8 @@ const autoManageChange = (value) => {
 .imageSize {
     width: 36px !important;
     height: 36px !important;
-    margin-right: 10px;
+    margin-right: 9px;
+    margin-left: -1px;
 }
 
 .vanPhotoWrap {

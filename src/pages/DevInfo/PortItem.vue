@@ -6,7 +6,7 @@
                     <svg-icon icon-class="ic_arrow" class="rightIcon" @click="selectPortType"></svg-icon>
                 </template>
             </van-cell>
-            <van-cell :title="t('DevInfo.status')" size="large" :title-style="van-cellTitleStype">
+            <van-cell :title="t('DevInfo.status')" size="large" :title-style="van - cellTitleStype">
                 <template #value>
                     <van-switch v-model="statusChecked" @change="statusChange" size="24" active-color="#617CF0" />
                 </template>
@@ -26,18 +26,18 @@
                     <van-switch v-model="powerChecked" @change="powerChange" size="24" active-color="#617CF0" />
                 </template>
             </van-cell>
-            <Field label="PVID" name="PVID" clearable v-model="pvid" size="24" :placeholder="t('DevInfo.inputvlanid') + '(1-4094)'" input-align="right" :focus="pvidFieldFocus" :blur="pvidFieldBlur" v-show="isShowPvid" />
+            <Field label="PVID" @keydown.enter="onSubmitPVID" name="PVID" clearable v-model="pvid" size="24" :placeholder="t('DevInfo.inputvlanid') + '(1-4094)'" input-align="right" :focus="pvidFieldFocus" :blur="pvidFieldBlur" v-show="isShowPvid" />
             <van-cell title="VLAN ID" size="large" :value="oPort.vlanid" v-show="isShowVlanid" @click="selectVlanId" :title-style="cellTitleStype">
                 <template #right-icon>
                     <svg-icon icon-class="ic_arrow" class="rightIcon"></svg-icon>
                 </template>
             </van-cell>
-            <van-cell :title="inwardRate" :value="oPort.inrate" size="large" v-show="isShowInRate" :title-style="cellTitleStype" />
-            <van-cell :title="outwardRate" :value="oPort.outrate" size="large" v-show="isShowOutRate" :title-style="cellTitleStype" />
+            <van-cell :class="{'en_page': proxy.$i18n.locale == 'en'}"  :title="inwardRate" :value="oPort.inrate" size="large" v-show="isShowInRate" :title-style="cellTitleStype" />
+            <van-cell :class="{'en_page': proxy.$i18n.locale == 'en'}"  :title="outwardRate" :value="oPort.outrate" size="large" v-show="isShowOutRate" :title-style="cellTitleStype" />
             <van-cell :title="curPower" :value="oPort.curporwer" size="large" v-show="isShowCurPower" :title-style="cellTitleStype" />
             <van-cell :title="summitPower" :value="oPort.inerror" size="large" v-show="isShowSumitPower" :title-style="cellTitleStype" />
-            <van-cell :title="inwardError" :value="oPort.inerror" size="large" v-show="isShowInError" :title-style="cellTitleStype" />
-            <van-cell :title="outwardError" :value="oPort.outerror" size="large" v-show="isShowOutError" :title-style="cellTitleStype" />
+            <van-cell :class="{'en_page': proxy.$i18n.locale == 'en'}"  :title="inwardError" :value="oPort.inerror" size="large" v-show="isShowInError" :title-style="cellTitleStype" />
+            <van-cell :class="{'en_page': proxy.$i18n.locale == 'en'}"  :title="outwardError" :value="oPort.outerror" size="large" v-show="isShowOutError" :title-style="cellTitleStype" />
         </van-cell-group>
         <van-popup v-model:show="showType" position="bottom" :style="{ height: '30%' }">
             <van-picker v-model="oPort.type" :columns="CategoryColumn" @confirm="onConfirmType" @cancel="onCancelType" @change="onChangeVlanId" columns-field-names="type" :confirm-button-text="t('Apply')" :cancel-button-text="t('Cancel')" show-toolbar="true"></van-picker>
@@ -50,11 +50,12 @@
 </template>
 
 <script setup>
-import { defineProps, ref, reactive } from "vue"
+import { defineProps, ref, reactive,getCurrentInstance } from "vue"
 import { useRouter } from "vue-router"
 import { useI18n } from "vue-i18n"
 import { Cell, CellGroup, Switch as VanSwitch, Popup, Picker as VanPicker, Field, Toast, Dialog } from "vant"
 
+const { proxy } = getCurrentInstance()
 const { t } = useI18n()
 const VanDialog = Dialog.Component
 
@@ -197,6 +198,10 @@ const pvidFieldFocus = () => {}
 const pvidFieldBlur = () => {
     Toast(t("SET_SUCCESS"))
 }
+
+const onSubmitPVID = () => {
+    Toast(t("SET_SUCCESS"))
+}
 </script>
 
 <style scoped>
@@ -226,5 +231,10 @@ const pvidFieldBlur = () => {
 
 .van-cell:after {
     border-bottom: 1px solid #d8d8d8;
+}
+
+.en_page.van-cell.van-cell--large :deep(.van-cell__title) {
+    flex: 2;
+
 }
 </style>

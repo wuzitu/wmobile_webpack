@@ -26,8 +26,10 @@ export default defineComponent({
         // [THEME_KEY]: "dark"
     },
     props: {
+        chartType: String,
         radioindex: Number,
-        echartData: Object
+        aTimesXData: Array,
+        seriesData: Array
     },
     setup: (props) => {
         const { t } = useI18n()
@@ -35,45 +37,35 @@ export default defineComponent({
         const after = t("RRM.after")
         const lengend1 = t("RRM.legend1")
         const lengend2 = t("RRM.legend2")
-        const lengend3 = t("RRM.legend3")
-        const lengend4 = t("RRM.legend4")
-        const lengend5 = t("RRM.legend5")
-        let xAxisVal = reactive(props.echartData.aTimesX[props.radioindex])
-        let seriesDatas = reactive(props.echartData.ajustDataRadio[props.radioindex])
+        let chartType = reactive(props.chartType)
+        let xAxisVal = reactive()
+        let seriesDatas = reactive()
+        if (chartType == "globle") {
+            xAxisVal = props.aTimesXData
+            seriesDatas = props.seriesData
+        } else {
+            xAxisVal = props.aTimesXData[props.radioindex]
+            seriesDatas = props.seriesData[props.radioindex]
+        }
+
         let option = ref({
-            width: "90%",
+            // width: "90%",
             // height: 200,
             backgroundColor: "#fff",
             tooltip: {
-                trigger: "axis",
-                formatter: function (oData) {
-                    var sTempt = ""
-                    for (let ii = 0; ii < oData.length; ii++) {
-                        if (ii == 0) {
-                            sTempt += oData[ii].name + "<br/>"
-                        }
-                        sTempt += oData[ii].seriesName + ":" + oData[ii].value + "%" + "<br/>"
-                        // if (ii % 2 == 0) {
-                        // sTempt += oData[ii].seriesName + "(" + before + "):" + oData[ii].value + "%" + "<br/>"
-                        // } else {
-                        //     sTempt += oData[ii].seriesName + "(" + after + "):" + oData[ii].value + "%" + "<br/>"
-                        // }
-                    }
-                    return sTempt
-                }
+                trigger: "axis"
             },
-            color: ["#AB61F0", "#FF6A38", "#F43E3B", "#617CF0", "#00AF6D"],
+            color: ["#AB61F0", "#FF6A38"],
             legend: {
-                top: 5,
+                // top: 15,
                 icon: "rect",
                 // show: false,
-                left: 10,
-                data: [lengend1, lengend2, lengend3, lengend4, lengend5],
-                selected: { [lengend1]: true, [lengend2]: false, [lengend3]: false, [lengend4]: false, [lengend5]: false }
+                right: "5%",
+                data: [lengend1, lengend2]
             },
             grid: {
-                left: "3%",
-                right: "4%",
+                left: "5%",
+                // right: "50",
                 bottom: 10,
                 containLabel: true
             },
@@ -85,45 +77,41 @@ export default defineComponent({
             xAxis: {
                 type: "category",
                 boundaryGap: false,
-                data: xAxisVal
-            },
-            yAxis: {
-                type: "value",
+                data: xAxisVal,
                 axisLabel: {
-                    formatter: "{value} %"
+                    showMaxLabel: true, // 展示最大值
+                    showMinLabel: true, // 展示最小值
+                    formatter: function (value, index) {
+                        if (index === 0) {
+                            return "                " + value
+                        }
+                        if (index === xAxisVal.length - 1) {
+                            return value + "                       "
+                        }
+                        return value
+                    }
                 }
             },
-
+            yAxis: {
+                type: "value"
+            },
             series: [
                 {
                     name: lengend1,
                     type: "line",
+                    smooth: true,
                     data: seriesDatas[0]
                 },
                 {
                     name: lengend2,
                     type: "line",
+                    smooth: true,
                     data: seriesDatas[1]
-                },
-                {
-                    name: lengend3,
-                    type: "line",
-                    data: seriesDatas[2]
-                },
-                {
-                    name: lengend4,
-                    type: "line",
-                    data: seriesDatas[3]
-                },
-                {
-                    name: lengend5,
-                    type: "line",
-                    data: seriesDatas[4]
                 }
             ]
         })
 
-        return { option, xAxisVal, seriesDatas }
+        return { option, xAxisVal, seriesDatas, chartType }
     }
 })
 </script>
@@ -133,7 +121,6 @@ export default defineComponent({
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    padding: 0.5rem 0.425rem 0.4rem 0.425rem;
     display: inline-block;
 }
 

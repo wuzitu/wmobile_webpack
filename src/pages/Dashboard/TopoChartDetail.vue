@@ -1,14 +1,65 @@
 <template>
     <div>
         <box-title :titleName="topologyTitle"></box-title>
-        <div class="echartContiner">
-            <v-chart class="topo-chart" ref="TopoChart" :option="option" :autoresize="true" :style="echartsStyle" draggable="true" />
-            <div id="BtnBox" class="btn_box">
-                <button id="BtnBig" class="btn btn-big" @click="zoom('+')">+</button>
-                <button id="BtnSmall" class="btn btn-small" @click="zoom('-')">-</button>
-                <button id="BtnList" class="btn btn-List">Mor</button>
-                <button id="BtnExportImg" class="btn btn-exportImg" @click="exportImage">Img</button>
-                <button id="BtnRefresh" class="btn btn-refresh" @click="onRefresh">Refresh</button>
+        <div class="continer">
+            <div class="echartsContiner">
+                <v-chart class="main_chart" ref="MainChart" :option="option" :autoresize="true" draggable="false" />
+                <div class="title_row">
+                    <span class="dot"></span>
+                    <span class="title_text">{{ OTHERS + ": " + OFFLINE }}</span>
+                </div>
+                <v-chart class="offline_chart" ref="OfflineChart" :option="offlineOption" :autoresize="true" draggable="false" />
+                <div class="title_row">
+                    <span class="dot"></span>
+                    <span class="title_text">{{ OTHERS + ": " + ONLINE }}</span>
+                </div>
+                <v-chart class="online_chart" ref="OnlineChart" :option="onlineOption" :autoresize="true" draggable="false" />
+            </div>
+            <div class="legend_continer">
+                <div class="legend_row">
+                    <span class="dot"></span>
+                    <span class="legend_text">{{ GATEWAY + ": " + GatewayNum.online + "/" + GatewayNum.total }}</span>
+                </div>
+                <div class="legend_row">
+                    <span class="dot"></span>
+                    <span class="legend_text">{{ SWITCH + ": " + SwitchNum.online + "/" + SwitchNum.total }}</span>
+                </div>
+                <div class="legend_row">
+                    <span class="dot"></span>
+                    <span class="legend_text">{{ AP + ": " + APNum.online + "/" + APNum.total }}</span>
+                </div>
+                <div class="legend_row">
+                    <span class="dot"></span>
+                    <span class="legend_text">{{ CLIENT + ": " + ClientNum.online }}</span>
+                </div>
+            </div>
+            <div id="BtnBox" class="toolbox">
+                <div id="BtnBig" class="toolbox_button" @click="zoom('+')">
+                    <svg-icon icon-class="ic_enlarge" class="iconStyle"></svg-icon>
+                    <span class="text">放大</span>
+                </div>
+                <div class="split-line"></div>
+                <div id="BtnSmall" class="toolbox_button" @click="zoom('-')">
+                    <svg-icon icon-class="ic_shrink" class="iconStyle"></svg-icon>
+                    <span class="text">缩小</span>
+                </div>
+                <div class="split-line"></div>
+                <div id="BtnExportImg" class="toolbox_button" @click="exportImage">
+                    <svg-icon icon-class="ic_download" class="iconStyle"></svg-icon>
+                    <span class="text">下载</span>
+                </div>
+                <div class="split-line"></div>
+                <div id="BtnRefresh" class="toolbox_button" @click="onRefresh">
+                    <svg-icon icon-class="ic_refresh" class="iconStyle"></svg-icon>
+                    <span class="text">刷新</span>
+                </div>
+            </div>
+
+            <div id="debug" class="debug">
+                <li>{{ debug1 }}</li>
+                <li>{{ debug2 }}</li>
+                <li>{{ debug3 }}</li>
+                <li>{{ debug4 }}</li>
             </div>
         </div>
     </div>
@@ -17,12 +68,13 @@
 <script setup>
 import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
-import { TreeChart } from "echarts/charts"
+import { TreeChart, CustomChart, GraphChart } from "echarts/charts"
 import VChart from "vue-echarts"
 import { UniversalTransition } from "echarts/features"
 import { useI18n } from "vue-i18n"
 import BoxTitle from "@/components/BoxTitle"
-import { useRouter } from "vue-router"
+import html2canvas from "html2canvas"
+// import { useRouter } from "vue-router"
 import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from "echarts/components"
 import { ref, onMounted } from "vue"
 import CloudImg from "@/frame/assets/img/ic_logo_cloudnet2.svg"
@@ -30,23 +82,70 @@ import InternetImg from "@/frame/assets/img/img_internet@3x.png"
 import GatewayImg from "@/frame/assets/img/ic_gateway.svg"
 import SwitchImg from "@/frame/assets/img/ic_switch.svg"
 import APImg from "@/frame/assets/img/ic_ap_f.svg"
-import ClientImg from "@/frame/assets/img/ic_phone.svg"
+// import ClientImg from "@/frame/assets/img/ic_phone.svg"
 import DisConnectImg from "@/frame/assets/img/disconnect.png"
 
 // import { off } from "process"
 
-use([CanvasRenderer, TitleComponent, TooltipComponent, LegendComponent, TreeChart, GridComponent, UniversalTransition])
+use([CanvasRenderer, TitleComponent, TooltipComponent, LegendComponent, TreeChart, CustomChart, GridComponent, GraphChart, UniversalTransition])
 const { t } = useI18n()
-const topologyTitle = ref(t("DashBoard.topology"))
+const topologyTitle = t("DashBoard.topology")
+const SN = t("DashBoard.serialNumber")
+const GATEWAY = t("MENU.gateway")
+const SWITCH = t("MENU.switch")
+const AP = t("MENU.ap")
+const CLIENT = t("MENU.terminal")
+const OTHERS = t("DashBoard.otherDevice")
+const ONLINE = t("DashBoard.online")
+const OFFLINE = t("DashBoard.offline")
 // const router = useRouter()
-let TopoChart = ref(null) //模板ref，获取dom元素节点，需放在setup中
+let MainChart = ref("MainChart") //模板ref，获取dom元素节点，需放在setup中
 let flag = true
 let g_myChart = {}
+const treeSize = {
+    NodeGWSize: [464, 180],
+    NodeSWSize: [464, 160],
+    NodeRootSize: [284, 160],
+    NodeAPSize: [464, 196],
+    NodeClientSize: [168, 160]
+}
+let g_nZoom = 0.5 //容器缩放比默认设置为50%
+
+let debug1 = ref("test") //调试
+let debug2 = ref("test")
+let debug3 = ref("test")
+let debug4 = ref("test")
+// const oDeviceType = {}
+// oDeviceType[GATEWAY] =
+// const oDeviceType = {
+//     gateway:{
+//         Text: t("MENU.gateway"),
+//         Icon: GatewayImg
+//     },
+//     switch:{
+//         Text: t("MENU.switch"),
+//         Icon: GatewayImg
+//     },
+//     ap:{
+//         Text: t("MENU.ap"),
+//         Icon: GatewayImg
+//     },
+//     terminal:{
+//         Text: t("MENU.terminal"),
+//         Icon: GatewayImg
+//     },
+// }
 const DeviceIcons = {
     "WA6520-C_T": APImg,
     "MSG360-4-PWR-F": GatewayImg,
     Switch: SwitchImg
 }
+const LineColor = "#617CF0"
+
+let GatewayNum = { online: 10, total: 20 }
+let SwitchNum = { online: 3, total: 5 }
+let APNum = { online: 100, total: 200 }
+let ClientNum = { online: 500 }
 
 const oJsonData = {
     SmartMC: {
@@ -56,7 +155,7 @@ const oJsonData = {
                     Id: "0",
                     MacAddress: "30-B0-37-A5-79-A0",
                     Role: "1",
-                    HostName: "H3C",
+                    HostName: "MSG360",
                     Model: "MSG360-4-PWR-F",
                     Hop: "0",
                     IpAddress: "127.0.0.1",
@@ -64,7 +163,8 @@ const oJsonData = {
                     Status: "1",
                     SysVersion: "7.1.064, ESS 5607",
                     IrfCount: "0",
-                    IsSnapshot: "true"
+                    IsSnapshot: "true",
+                    Type: AP
                 },
                 {
                     Id: "1",
@@ -78,13 +178,14 @@ const oJsonData = {
                     Status: "1",
                     SysVersion: "7.1.070 Release 6338",
                     IrfCount: "1",
-                    IsSnapshot: "false"
+                    IsSnapshot: "false",
+                    Type: "SW"
                 },
                 {
                     Id: "2",
                     MacAddress: "5C-A7-21-EE-F8-E0",
                     Role: "2",
-                    HostName: "H3C",
+                    HostName: "SW-2",
                     Model: "Switch",
                     Hop: "1",
                     IpAddress: "192.168.2.6",
@@ -92,13 +193,14 @@ const oJsonData = {
                     Status: "1",
                     SysVersion: "7.1.064, ESS 5607",
                     IrfCount: "0",
-                    IsSnapshot: "false"
+                    IsSnapshot: "false",
+                    Type: "SW"
                 },
                 {
                     Id: "3",
                     MacAddress: "5C-A7-21-EE-F8-E3",
                     Role: "2",
-                    HostName: "H3C",
+                    HostName: "SW-3",
                     Model: "Switch",
                     Hop: "3",
                     IpAddress: "192.168.2.6",
@@ -106,13 +208,14 @@ const oJsonData = {
                     Status: "1",
                     SysVersion: "7.1.064, ESS 5607",
                     IrfCount: "0",
-                    IsSnapshot: "false"
+                    IsSnapshot: "false",
+                    Type: "SW"
                 },
                 {
                     Id: "4",
                     MacAddress: "5C-A7-21-EE-F8-E4",
                     Role: "2",
-                    HostName: "H3C",
+                    HostName: "SW-4",
                     Model: "Switch",
                     Hop: "4",
                     IpAddress: "192.168.2.6",
@@ -120,13 +223,14 @@ const oJsonData = {
                     Status: "1",
                     SysVersion: "7.1.064, ESS 5607",
                     IrfCount: "0",
-                    IsSnapshot: "false"
+                    IsSnapshot: "false",
+                    Type: "SW"
                 },
                 {
                     Id: "5",
                     MacAddress: "5C-A7-21-EE-F8-E5",
                     Role: "2",
-                    HostName: "H3C",
+                    HostName: "WA6520-C_T",
                     Model: "WA6520-C_T",
                     Hop: "5",
                     IpAddress: "192.168.2.6",
@@ -134,13 +238,14 @@ const oJsonData = {
                     Status: "1",
                     SysVersion: "7.1.064, ESS 5607",
                     IrfCount: "0",
-                    IsSnapshot: "false"
+                    IsSnapshot: "false",
+                    Type: "AP"
                 },
                 {
                     Id: "6",
                     MacAddress: "5C-A7-21-EE-F8-E5",
                     Role: "2",
-                    HostName: "H3C",
+                    HostName: "WA6520-C_T",
                     Model: "WA6520-C_T",
                     Hop: "5",
                     IpAddress: "192.168.2.6",
@@ -148,13 +253,14 @@ const oJsonData = {
                     Status: "1",
                     SysVersion: "7.1.064, ESS 5607",
                     IrfCount: "0",
-                    IsSnapshot: "false"
+                    IsSnapshot: "false",
+                    Type: "AP"
                 },
                 {
                     Id: "7",
                     MacAddress: "5C-A7-21-EE-F8-E5",
                     Role: "2",
-                    HostName: "H3C",
+                    HostName: "WA6520-C_T",
                     Model: "WA6520-C_T",
                     Hop: "5",
                     IpAddress: "192.168.2.6",
@@ -162,7 +268,98 @@ const oJsonData = {
                     Status: "1",
                     SysVersion: "7.1.064, ESS 5607",
                     IrfCount: "0",
-                    IsSnapshot: "false"
+                    IsSnapshot: "false",
+                    Type: "AP"
+                },
+                {
+                    Id: "8",
+                    MacAddress: "5C-A7-21-EE-F8-E6",
+                    Role: "2",
+                    HostName: "client1",
+                    Model: "WA6520-C_T",
+                    Hop: "5",
+                    IpAddress: "192.168.2.6",
+                    SerialNumber: "219801A3718216E00009",
+                    Status: "1",
+                    SysVersion: "7.1.064, ESS 5607",
+                    IrfCount: "0",
+                    IsSnapshot: "false",
+                    Type: CLIENT
+                },
+                {
+                    Id: "9",
+                    MacAddress: "5C-A7-21-EE-F8-E7",
+                    Role: "2",
+                    HostName: "client2",
+                    Model: "WA6520-C_T",
+                    Hop: "5",
+                    IpAddress: "192.168.2.6",
+                    SerialNumber: "219801A3718216E00009",
+                    Status: "1",
+                    SysVersion: "7.1.064, ESS 5607",
+                    IrfCount: "0",
+                    IsSnapshot: "false",
+                    Type: CLIENT
+                },
+                {
+                    Id: "11", //独立节点
+                    MacAddress: "5C-A7-21-EE-F8-E7",
+                    Role: "2",
+                    HostName: "client2",
+                    Model: "WA6520-C_T",
+                    Hop: "5",
+                    IpAddress: "192.168.2.6",
+                    SerialNumber: "219801A3718216E00009",
+                    Status: "1",
+                    SysVersion: "7.1.064, ESS 5607",
+                    IrfCount: "0",
+                    IsSnapshot: "false",
+                    Type: "AP"
+                },
+                {
+                    Id: "12",
+                    MacAddress: "5C-A7-21-EE-F8-E7",
+                    Role: "2",
+                    HostName: "client2",
+                    Model: "WA6520-C_T",
+                    Hop: "5",
+                    IpAddress: "192.168.2.6",
+                    SerialNumber: "219801A3718216E00009",
+                    Status: "1",
+                    SysVersion: "7.1.064, ESS 5607",
+                    IrfCount: "0",
+                    IsSnapshot: "false",
+                    Type: "AP"
+                },
+                {
+                    Id: "13",
+                    MacAddress: "5C-A7-21-EE-F8-E7",
+                    Role: "2",
+                    HostName: "SW-5",
+                    Model: "WA6520-C_T",
+                    Hop: "5",
+                    IpAddress: "192.168.2.6",
+                    SerialNumber: "219801A3718216E00009",
+                    Status: "2",
+                    SysVersion: "7.1.064, ESS 5607",
+                    IrfCount: "0",
+                    IsSnapshot: "false",
+                    Type: "SW"
+                },
+                {
+                    Id: "14",
+                    MacAddress: "5C-A7-21-EE-F8-E7",
+                    Role: "2",
+                    HostName: "SW-6",
+                    Model: "WA6520-C_T",
+                    Hop: "5",
+                    IpAddress: "192.168.2.6",
+                    SerialNumber: "219801A3718216E00009",
+                    Status: "2",
+                    SysVersion: "7.1.064, ESS 5607",
+                    IrfCount: "0",
+                    IsSnapshot: "false",
+                    Type: "SW"
                 }
             ]
         },
@@ -293,6 +490,42 @@ const oJsonData = {
                     DesMAC: "00-E0-FC-00-51-00",
                     STPStatus: "false",
                     LinkStatus: "3"
+                },
+                {
+                    SrcId: "7",
+                    IfIndex: "3",
+                    SrcMAC: "5C-A7-21-EE-F8-E0",
+                    DesId: "8",
+                    DesMAC: "00-E0-FC-00-51-00",
+                    STPStatus: "false",
+                    LinkStatus: "3"
+                },
+                {
+                    SrcId: "8",
+                    IfIndex: "3",
+                    SrcMAC: "5C-A7-21-EE-F8-E0",
+                    DesId: "7",
+                    DesMAC: "00-E0-FC-00-51-00",
+                    STPStatus: "false",
+                    LinkStatus: "3"
+                },
+                {
+                    SrcId: "7",
+                    IfIndex: "3",
+                    SrcMAC: "5C-A7-21-EE-F8-E0",
+                    DesId: "9",
+                    DesMAC: "00-E0-FC-00-51-00",
+                    STPStatus: "false",
+                    LinkStatus: "3"
+                },
+                {
+                    SrcId: "9",
+                    IfIndex: "3",
+                    SrcMAC: "5C-A7-21-EE-F8-E0",
+                    DesId: "7",
+                    DesMAC: "00-E0-FC-00-51-00",
+                    STPStatus: "false",
+                    LinkStatus: "3"
                 }
             ]
         },
@@ -309,7 +542,7 @@ function transformRelationToTree(aDeviceList, aLinkRelation) {
     let oLinkRelation = {}
     let oDeviceList = {}
     aDeviceList.forEach(function (obj, index) {
-        // obj.name = obj.Id;//echarts tree 索引为name
+        obj.name = obj.Id //echarts tree 索引为name
         obj.children = [] //add children
         oDeviceList[obj.Id] = obj
     })
@@ -329,27 +562,6 @@ function transformRelationToTree(aDeviceList, aLinkRelation) {
             i-- //
         }
     }
-
-    /* 遍历出独立节点 */
-    let oTmpId = {}
-    let aLoneyDevice = aDeviceList.concat() //copy
-    for (let i = 0; i < aLinkRelationLite.length; i++) {
-        if (!oTmpId[aLinkRelationLite[i].SrcId]) {
-            oTmpId[aLinkRelationLite[i].SrcId] = {} //
-        }
-        if (!oTmpId[aLinkRelationLite[i].DesId]) {
-            oTmpId[aLinkRelationLite[i].DesId] = {} //
-        }
-    }
-    for (let i = 0; i < aLoneyDevice.length; i++) {
-        if (oTmpId[aLoneyDevice[i].Id]) {
-            aLoneyDevice.splice(i, 1) //
-            i--
-        }
-    }
-    aLoneyDevice.forEach(function (obj, index) {
-        // obj["NodeType"] = "Lonely";//添加独立节点标识
-    })
 
     function getChildren(oParent) {
         //oParent:当前元素 sData:需要遍历的元素
@@ -383,60 +595,62 @@ function transformRelationToTree(aDeviceList, aLinkRelation) {
     let oRootVisual = {
         //创建一个根节点，为云和互联网
         // name:"cloudAndInternet",
-        children: [oRoot]
+        children: [oRoot],
+        Type: "root"
         // NodeType:"root",    //添加根节点标识
     }
     return oRootVisual
 }
 
-/* 设置节点的样式图 包括图标和文字的布局*/
-function setNodeStyle(oTreeData) {
-    /* 递归遍历子节点*/
-    function setChildrenNode(aChildren) {
-        aChildren.forEach(function (oChild, index) {
-            let oNomalNode = {
-                //普通节点
-                name: oChild.Id,
-                // height:90,
-                label: {
-                    position: [0, 0],
-                    formatter: ["{WhiteContiner|}", "{DeviceIcon|}", "{DeviceName|" + oChild.HostName + "}", "{DeviceModel|" + oChild.Model + "}"].join("\n"),
-                    rich: {
-                        WhiteContiner: {
-                            //设置一个宽度，撑开容器
-                            width: 480,
-                            height: 0
-                        },
-                        DeviceIcon: {
-                            height: 60,
-                            align: "center",
-                            backgroundColor: {
-                                image: DeviceIcons[oChild.Model]
-                            }
-                        },
-                        DeviceName: {
-                            height: 40,
-                            align: "center",
-                            fontSize: 26,
-                            fontWeight: 500
-                        },
-                        DeviceModel: {
-                            height: 20,
-                            align: "center",
-                            fontSize: 24
-                        }
-                    }
-                }
-            }
-            Object.assign(oChild, oNomalNode) //根节点和样式 对象合并
-            setChildrenNode(oChild.children) //递归遍历子节点的子节点
-        })
+function getLonelyDevices(aDeviceList, aLinkRelation) {
+    /* 遍历出独立节点 */
+    let oTmpId = {}
+    let aDevices = aDeviceList.concat() //copy
+    for (let i = 0; i < aLinkRelation.length; i++) {
+        if (!oTmpId[aLinkRelation[i].SrcId]) {
+            oTmpId[aLinkRelation[i].SrcId] = {} //
+        }
+        if (!oTmpId[aLinkRelation[i].DesId]) {
+            oTmpId[aLinkRelation[i].DesId] = {} //
+        }
+    }
+    for (let i = 0; i < aDevices.length; i++) {
+        if (oTmpId[aDevices[i].Id]) {
+            aDevices.splice(i, 1) //
+            i--
+        }
     }
 
+    /* 独立节点分两种，一种是在线的，一种是离线的，根据status来判�?   这个要等待实际数�?来判�?�?否准�?！！！！！！！！！！！！�? */
+    let aLoneyDevice = {
+        online: [],
+        offline: []
+    }
+    aDevices.forEach(function (obj, index) {
+        // obj["NodeType"] = "Lonely";//添加�?立节点标�?
+        if ("1" == obj.Status) {
+            //1:normal 2:offline
+            aLoneyDevice.online.push(obj)
+        } else if ("2" == obj.Status) {
+            aLoneyDevice.offline.push(obj)
+        }
+    })
+
+    return aLoneyDevice
+}
+
+/* 设置节点的样式图 包括图标和文字的布局*/
+function setNodeStyle(oTreeData) {
+    setRootNodeStyle(oTreeData)
+    setNomalNodeStyle(oTreeData.children)
+
+    return oTreeData
+}
+
+/* 设置根节点的样式 */
+function setRootNodeStyle(oTreeData) {
     let oRootNode = {
         //将cloud和internet做成一个整体，当做根节点，用富文本来实现
-        name: "cloudAndInternet",
-        // children:[oTreeData],
         height: 90,
         label: {
             // position: [0, 0],
@@ -444,7 +658,7 @@ function setNodeStyle(oTreeData) {
             rich: {
                 WhiteContiner: {
                     //设置一个宽度，撑开容器
-                    width: 480,
+                    width: 380,
                     height: 0
                 },
                 Cloud: {
@@ -496,22 +710,22 @@ function setNodeStyle(oTreeData) {
                     align: "right"
                 },
                 lineLeft: {
-                    borderWidth: 1, //以后需要全局
-                    borderColor: "#000", //以后需要全局
+                    borderWidth: 2, //以后需要全局
+                    borderColor: LineColor, //以后需要全局
                     width: 0.5,
                     height: 20,
                     align: "left"
                 },
                 lineBottom: {
-                    borderWidth: 1, //以后需要全局
-                    borderColor: "#000", //以后需要全局
-                    width: 400,
+                    borderWidth: 2, //以后需要全局
+                    borderColor: LineColor, //以后需要全局
+                    width: 300,
                     height: 0.5,
                     verticalAlign: "bottom"
                 },
                 lineRight: {
-                    borderWidth: 1, //以后需要全局
-                    borderColor: "#000", //以后需要全局
+                    borderWidth: 2, //以后需要全局
+                    borderColor: LineColor, //以后需要全局
                     width: 0.5,
                     height: 20,
                     align: "right"
@@ -520,10 +734,85 @@ function setNodeStyle(oTreeData) {
         }
     }
     Object.assign(oTreeData, oRootNode) //根节点和样式 对象合并
+}
 
-    setChildrenNode(oTreeData.children) //遍历子节点
+/* 递归遍历子节点*/
+function setNomalNodeStyle(aChildren) {
+    if (!aChildren.length) return
 
-    return oTreeData
+    aChildren.forEach(function (oChild, index) {
+        let oNomalNode = {
+            //�?通节�?
+            // name: oChild.Id,
+            // height:90,
+            label: {
+                // position: [0, 0],
+                formatter: ["{WhiteContiner|}", "{DeviceIcon|}", "{DeviceName|" + oChild.HostName + " (" + oChild.Type + ") " + "}", "{DeviceDesc|" + SN + ": " + oChild.SerialNumber + "}"].join("\n"),
+                rich: {
+                    WhiteContiner: {
+                        //设置一�?宽度，撑开容器
+                        width: 480,
+                        height: 0
+                    },
+                    DeviceIcon: {
+                        height: 60,
+                        align: "center",
+                        backgroundColor: {
+                            image: DeviceIcons[oChild.Model]
+                        }
+                    },
+                    DeviceName: {
+                        // height: 40,
+                        align: "center",
+                        fontSize: 24,
+                        fontWeight: 500,
+                        lineHeight: 24,
+                        padding: [20, 0, 0, 0]
+                    },
+                    DeviceDesc: {
+                        // height: 24,
+                        align: "center",
+                        fontSize: 24,
+                        lineHeight: 24,
+                        padding: [26, 0, 0, 0]
+                    }
+                }
+            }
+        }
+        Object.assign(oChild, oNomalNode) //根节点和样式 对象合并
+        setNomalNodeStyle(oChild.children) //递归遍历子节点的子节�?
+    })
+}
+/* 设置关系图的节点位置 */
+function setNodePosition(aData) {
+    if (!aData.length) return
+
+    let nodeX = 100 //起始位置
+    let nodeY = 40
+    aData.forEach(function (obj, index) {
+        obj.value = [nodeX, nodeY]
+        nodeX += treeSize.NodeGWSize[0]
+    })
+}
+
+/* 设置不同类型节点的尺寸 */
+function getSymbolSize(params) {
+    switch (
+        params.data.Type //SW AC AP Others
+    ) {
+        case "root":
+            return treeSize.NodeRootSize
+        case GATEWAY:
+            return treeSize.NodeGWSize
+        case "SW":
+            return treeSize.NodeSWSize
+        case "AP":
+            return treeSize.NodeAPSize
+        case CLIENT:
+            return treeSize.NodeClientSize
+        default:
+            return "Node symbolSize Error"
+    }
 }
 
 let oData = oJsonData.SmartMC
@@ -531,6 +820,11 @@ let aDeviceList = oData.DeviceList.Device
 let aLinkRelation = oData.LinkRelation.Relation
 let oTreeData = transformRelationToTree(aDeviceList, aLinkRelation)
 let oTreeEcharts = setNodeStyle(oTreeData) //给节点添加label标签等样式
+let aLoneyDevice = getLonelyDevices(aDeviceList, aLinkRelation)
+setNomalNodeStyle(aLoneyDevice.online)
+setNomalNodeStyle(aLoneyDevice.offline)
+setNodePosition(aLoneyDevice.online)
+setNodePosition(aLoneyDevice.offline)
 
 let option = ref({
     title: {},
@@ -540,20 +834,44 @@ let option = ref({
         trigger: "item", //触发类型，默认：item（数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用）。可选：'axis'：坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用。'none':什么都不触发。
         triggerOn: "mousemove" //提示框触发的条件，默认mousemove|click（鼠标点击和移动时触发）。可选mousemove：鼠标移动时，click：鼠标点击时，none：
     },
+    grid: [
+        {
+            show: false,
+            left: 0,
+            top: 0,
+            bottom: 0,
+            right: 0,
+            backgroundColor: "#E5E6E8"
+            // borderColor: "#aae",
+            // borderWidth: 4
+        }
+    ],
+    xAxis: [
+        {
+            type: "value",
+            show: false
+        }
+    ],
+    yAxis: [
+        {
+            type: "value",
+            show: false
+        }
+    ],
     series: [
         {
             type: "tree", //树图topo
             id: 0,
             name: "tree1",
+            // bottom: treeSize.NodeGWSize * 2.5,
+            // width:2000,//tree组件的�?�度�?
+            // height:2000,
+            // center:[500,500],//当前视�?�的�?心点
+            // zoom:1,//当前视�?�的缩放比例�?
             symbol: "rect", // 长方形
             // symbolKeepAspect: "true", //是否在缩放时保持该图形的长宽比。
             symbolSize: function (value, params) {
-                if (1 === params.dataIndex) {
-                    //根节点index为1！！！
-                    return [480, 160]
-                } else {
-                    return [480, 120]
-                }
+                return getSymbolSize(params)
             }, //标记的大小，就是那个小圆圈，默认7
             // nodePadding:[],//自定义间距 需要修改echarts源码
             // roam:"move",      //是否开启鼠标缩放和平移漫游。可以设置成 'scale' 或者 'move'。设置成 true 为都开启
@@ -584,14 +902,10 @@ let option = ref({
             itemStyle: {
                 //当symbol为图片的时候，下面的配置不生效
                 color: "#fff" //填充色
-                // borderColor:"#f00",
-                // borderWidth:1,
-                // borderType:"solid",
-                // opacity: 1,
             },
             lineStyle: {
-                opacity: 0.9,
-                width: 4,
+                color: LineColor,
+                width: 2,
                 curveness: 0
             },
             expandAndCollapse: false, //子树折叠和展开的交互，默认打开
@@ -601,6 +915,145 @@ let option = ref({
         }
     ]
 })
+let offlineOption = ref({
+    title: {},
+    tooltip: {
+        show: true,
+        trigger: "item",
+        triggerOn: "mousemove"
+    },
+    grid: [
+        {
+            left: 100,
+            top: 100,
+            bottom: 0,
+            right: 0,
+            show: false, //test
+            borderColor: "#eee"
+        }
+    ],
+    xAxis: [
+        {
+            min: 0,
+            max: 2000, //需要使用全局变量
+            positon: "top",
+            show: false,
+            type: "value"
+        }
+    ],
+    yAxis: [
+        {
+            min: 0,
+            max: 2000,
+            show: false,
+            inverse: true,
+            type: "value"
+        }
+    ],
+    series: [
+        {
+            name: "offlineChart",
+            type: "graph",
+            animation: false,
+            coordinateSystem: "cartesian2d", //使用二维的直角坐标系
+            roma: false,
+            zlevel: 2,
+            data: aLoneyDevice.offline,
+            links: [],
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: "rgba(0, 0, 0, 0.5)"
+                }
+            },
+            symbol: "rect", // 长方�?
+            symbolSize: function (value, params) {
+                return getSymbolSize(params)
+            },
+
+            label: {
+                //每个节点所对应的标签的样式
+                show: true,
+                position: "inside"
+            },
+
+            itemStyle: {
+                color: "#fff"
+            }
+        }
+    ]
+})
+let onlineOption = ref({
+    title: {},
+    tooltip: {
+        //提示框组�?
+        show: true,
+        trigger: "item",
+        triggerOn: "mousemove"
+    },
+    grid: [
+        {
+            left: 100,
+            top: 100,
+            bottom: 0,
+            right: 0,
+            show: false //test
+            // borderColor: "#eee"
+        }
+    ],
+    xAxis: [
+        {
+            min: 0,
+            max: 2000, //需要使用全局变量
+            positon: "top",
+            show: false,
+            type: "value"
+        }
+    ],
+    yAxis: [
+        {
+            min: 0,
+            max: 2000,
+            show: false,
+            inverse: true,
+            type: "value"
+        }
+    ],
+    series: [
+        {
+            name: "onlineChart",
+            type: "graph",
+            animation: false,
+            coordinateSystem: "cartesian2d", //使用二维的直角坐标系
+            roma: false,
+            zlevel: 2,
+            data: aLoneyDevice.online,
+            links: [],
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: "rgba(0, 0, 0, 0.5)"
+                }
+            },
+            symbol: "rect",
+            symbolSize: function (value, params) {
+                return getSymbolSize(params)
+            },
+            label: {
+                //每个节点所对应的标签的样式
+                show: true,
+                position: "inside"
+            },
+            itemStyle: {
+                color: "#fff"
+            }
+        }
+    ]
+})
+// console.log(option)
+// console.log(offlineOption)
 
 /*  画布宽高自适应，最大宽度以叶子节点数量为准，后期这里也需要考虑独立节点的数量；
             基本思路：画布最大宽度为叶子节点的数量，画布宽度确定后，就不再改变了；
@@ -608,17 +1061,16 @@ let option = ref({
                     resize之后，再次遍历所有节点，获取最左侧节点和最右侧节点的坐标，然后根据此坐标重新调整画布大小
         */
 function resizeTree() {
-    let ChartsDom = document.querySelector(".topo-chart")
-    let ChartsContiner = document.querySelector(".echartContiner")
-    let myChart = TopoChart.value.chart // 需要在生命周期获取 .value
-    // let nodes = Array.from(new Set(myChart._chartsViews[0]._data._graphicEls)); //去重 + 伪数组转数组
+    let ChartsDom = document.querySelector(".main_chart")
+    let ChartsContiner = document.querySelector(".echartsContiner")
+    let myChart = MainChart.value.chart // 需要在生命周期获取 .value
     let aNodes = Array.from(new Set(myChart._chartsViews[0]._data.tree._nodes)) //去重 + 伪数组转数组
     let nAllLeavesNodes = 0 //所有叶子节点的数量
     aNodes.forEach(function (obj, index) {
         !obj.children.length && nAllLeavesNodes++
     })
 
-    let dep = myChart._chartsViews[0]._data.tree.root.height //获取树高
+    let dep = myChart._chartsViews[0]._data.tree.root.height //获取层级
     let layer_height = 200 //层级之间的高度
     // let domHeight = ChartsDom.clientHeight;
     let newHeight = layer_height * (dep + 1) || layer_height
@@ -629,57 +1081,131 @@ function resizeTree() {
     let newWidth = Math.max(currentWidth, domWidth)
     ChartsDom.style.width = newWidth + "px"
     ChartsDom.style.height = newHeight + "px"
-    let continerCenter = [ChartsContiner.clientWidth / 2, ChartsContiner.clientHeight / 2] //获取echarts所在屏幕显示区域的中心点
+    let continerCenter = [ChartsContiner.clientWidth / 4, ChartsContiner.clientHeight / 4] //获取echarts所在屏幕显示区域的�?心点
     let chartsCenter = [newWidth / 2, newHeight / 2]
-    ChartsDom.style.left = continerCenter[0] - chartsCenter[0] + "px"
-    ChartsDom.style.top = "0px"
-    ChartsDom.style.zoom = "50%"
+    ChartsContiner.style.left = continerCenter[0] - chartsCenter[0] + "px"
+    ChartsContiner.style.top = "0px"
+    ChartsContiner.style.zoom = g_nZoom * 100 + "%"
+    // debug3.value = g_nZoom
+    // debug4.value = newWidth + "  " + newHeight
     myChart.resize()
 }
 
 let MyChartDom = document.getElementById("MyEchart")
 let touchXY = {}
 let MyChartDomXY = {}
+let isClick = true //true:点击事件 false:拖动事件
+let count = 0
+
+/* 消抖函数，比如输入框，连续输入，只在最后一次输入完成后等待delay时间后再响应fn事件 */
+function debounce(fn,delay){
+    var timer = null;
+    return function(){
+        var _this = this;
+        var args = arguments;
+        if(timer !== null){
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function(){
+            fn.apply(_this,args);
+        },delay);
+    }
+}
+
+/* 节流函数，响应第一次fn触发后，等待delay时间后才能执行下一次响应 */
+function throttle(fun,delay){
+    var prev = Date.now(); // 闭包维护一个起始时间戳
+    return function(){
+        var context = this;
+        var args = arguments;
+        var now = Date.now();  // 每次任务函数触发的时候获取时间戳
+        if(now-prev >= delay){ // 判断当前时间与起始时间戳的间隔 大余delay则触发任务函数
+            fun.apply(context,args);
+            prev = Date.now(); // 关键是要更新闭包中的 起始时间戳
+        }
+    }
+}
 
 /* 拖放画布事件 */
 function bindDragEvents() {
     // let ChartContiner = document.getElementById("echart_continer");
-    let MyChartDom = document.querySelector(".topo-chart")
+    let MyChartDom = document.querySelector(".echartsContiner")
     let touchXY = {}
     let MyChartDomXY = {}
+    let touchDistance = 0
     // 拖放开始事件 加红色边框
     MyChartDom.addEventListener(
         "touchstart",
         (e) => {
-            let touch = e.touches[0] //暂时只支持一个触摸点
-            /* 动态创建一个空白的canvas，用来代替drag时的半透明图像 */
-            /* 记录触摸点和画布的初始位置 */
-            touchXY = { X: touch.pageX, Y: touch.pageY } //计算鼠标落下时的初始位置
+            debug1.value = "START"
+            count = 0
+            e.stopPropagation()
+            e.preventDefault()//阻止默认浏览器动作(W3C)
+
+            isClick = true
+
+            //2个触摸点
+            let touch1 = e.touches[0] //拖动以第一个点为准
+            let touch2 = e.touches[1] //双指缩放以 1和2这两个点为准
+
+            if (touch2) {
+                //2个触摸点及以上
+                let dx = Math.abs(touch2.pageX - touch1.pageX)
+                let dy = Math.abs(touch2.pageY - touch1.pageY)
+                touchDistance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) //两个点之间的距离
+            }
+
+            touchXY = { X: touch1.pageX, Y: touch1.pageY } //计算鼠标落下时的初始位置
             MyChartDomXY = { X: MyChartDom.style.left.split("px")[0] * 1, Y: MyChartDom.style.top.split("px")[0] * 1 }
+
             // console.log("touch",touch.pageX,touch.pageY);
             // console.log("MyChartDom",MyChartDom.style.left,MyChartDom.style.top);
+
+            // debug2.value = MyChartDom.style.left + MyChartDom.style.top;
         },
         false
     )
 
     // 拖放进行中0
     MyChartDom.addEventListener(
-        "touchmove",
-        (e) => {
-            // event.stopPropagation();
-            // event.preventDefault();
-            let touch = e.touches[0] //暂时只支持一个触摸点
-            if (!touch.pageX || !touch.pageY) {
+        "touchmove",throttle((e) => {
+            debug1.value = "MOVE " + count++
+            e.stopPropagation()
+            e.preventDefault()//阻止默认浏览器动作(W3C)
+
+            //2个触摸点
+            let touch1 = e.touches[0] //拖动以第一个点为准
+            let touch2 = e.touches[1] //双指缩放以 1和2这两个点为准
+
+            /* 拖动 */
+            if (!touch1.pageX || !touch1.pageY) {
                 //拖拽结束的时候，pageX和pageY会突变为0，所以为0的时候不做处理
                 return false
             }
-            MyChartDom.style.left = MyChartDomXY.X + touch.pageX - touchXY.X + "px"
-            MyChartDom.style.top = MyChartDomXY.Y + touch.pageY - touchXY.Y + "px"
+            MyChartDom.style.left = MyChartDomXY.X + (touch1.pageX - touchXY.X) / g_nZoom + "px" //这里偏移量要除以g_nZoom这个系数
+            MyChartDom.style.top = MyChartDomXY.Y + (touch1.pageY - touchXY.Y) / g_nZoom + "px"
+
+            /* 缩放 */
+            if (touch2) {
+                //2个触摸点及以上
+                let dx = Math.abs(touch2.pageX - touch1.pageX)
+                let dy = Math.abs(touch2.pageY - touch1.pageY)
+                let newTouchDistance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) //两个点之间的距离
+                g_nZoom = g_nZoom + ((newTouchDistance - touchDistance) / touchDistance) * 0.1 //0.5是自定义的缩放系数
+                MyChartDom.style.zoom = g_nZoom
+                debug2.value = dx + "  " + dy
+                debug3.value = ((newTouchDistance - touchDistance) / touchDistance) * 0.1 + "  " + count
+                touchDistance = newTouchDistance
+            }
+
             // console.log("touch",touch.pageX,touch.pageY);
             // console.log(touch.pageX - touchXY.X)
             // console.log(MyChartDom.style.left.split("px")[0] * 1 -MyChartDomXY.X)
             // console.log("MyChartDom",MyChartDom.style.left,MyChartDom.style.top);
-        },
+
+            return false
+        },200)
+        ,
         false
     )
 
@@ -687,10 +1213,11 @@ function bindDragEvents() {
     MyChartDom.addEventListener(
         "touchend",
         (e) => {
-            // event.stopPropagation();
-            // event.preventDefault();
+            e.stopPropagation()
+            e.preventDefault()
             // console.log("mouse",touch.pageX,touch.pageY);
             // console.log("MyChartDom",MyChartDom.style.left,MyChartDom.style.top);
+            debug1.value = "END"
         },
         false
     )
@@ -702,50 +1229,65 @@ function showDeviceList() {
 
 /* 缩放图表 */
 function zoom(action) {
-    let ChartDom = document.querySelector(".topo-chart")
-    let nZoom = ChartDom.style.zoom.split("%")[0] * 1
+    let ChartDom = document.querySelector(".echartsContiner")
+    // let nZoom = ChartDom.style.zoom.split("%")[0] * 1
 
     if (action == "+") {
-        nZoom += 5
+        g_nZoom += 0.05
         // console.log("zoom +");
     } else if (action == "-") {
-        nZoom -= 5
+        g_nZoom -= 0.05
         // console.log("zoom -");
     } else {
         return
     }
-    ChartDom.style.zoom = nZoom + "%"
+    ChartDom.style.zoom = g_nZoom * 100 + "%"
     g_myChart.resize()
 }
 
 /* 下载图片 */
 function exportImage() {
-    let picInfo = g_myChart.getDataURL({
-        type: "png",
-        pixelRatio: 1.5, //放大两倍下载，之后压缩到同等大小展示。解决生成图片在移动端模糊问题
-        backgroundColor: "#fff"
-    }) //获取到的是一串base64信息
+    // let picInfo = g_myChart.getDataURL({
+    //     type: "png",
+    //     pixelRatio: 1.5, //放大两倍下载，之后压缩到同等大小展示。解决生成图片在移动�?模糊�?�?
+    //     backgroundColor: "#fff"
+    // }) //获取到的�?一串base64信息
 
-    const elink = document.createElement("a")
-    elink.download = "统计图"
-    elink.style.display = "none"
-    elink.href = picInfo
-    document.body.appendChild(elink)
-    elink.click()
-    URL.revokeObjectURL(elink.href) // 释放URL 对象
-    document.body.removeChild(elink)
-}
+    // let canvasId = this.$refs[]
+    // const elink = document.createElement("a")
+    // elink.download = "统�?�图"
+    // elink.style.display = "none"
+    // elink.href = picInfo
+    // document.body.appendChild(elink)
+    // elink.click()
+    // URL.revokeObjectURL(elink.href) // 释放URL 对象
+    // document.body.removeChild(elink)
 
-function onRefresh() {
-    $.getJSON("topodata2.json", function (result) {
-        //如果json格式错误会无法进入回调函数且浏览器不报错
-        let oData = result.SmartMC
-        drawEcharts(oData)
+    // 将echarts图表�?�?为canvas,并将canvas下载为图�?
+    // 图表�?换成canvas
+    html2canvas(document.querySelector(".echartsContiner")).then(function (canvas) {
+        var img = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream")
+        // 创建a标�?�，实现下载
+        var creatIMg = document.createElement("a")
+        creatIMg.download = "topo.png" // 设置下载的文件名
+        creatIMg.style.display = "none"
+        creatIMg.href = img // 下载url
+        document.body.appendChild(creatIMg)
+        creatIMg.click()
+        creatIMg.remove() // 下载之后把创建的元素删除
     })
 }
 
+function onRefresh() {
+    // $.getJSON("topodata2.json", function (result) {
+    //如果json格式错误会无法进入回调函数且浏览器不报错
+    //     let oData = result.SmartMC
+    //     drawEcharts(oData)
+    // })
+}
+
 onMounted(function () {
-    g_myChart = TopoChart.value.chart // 需要在生命周期获取 .value
+    g_myChart = MainChart.value.chart // 需要在生命周期获取 .value
     g_myChart.on("finished", function () {
         if (flag) {
             flag = false
@@ -759,34 +1301,128 @@ onMounted(function () {
 
 <style scoped>
 /* scoped内只对组件作用 */
-.echartContiner {
-    width: 400px;
-    height: 700px;
-    /* margin:auto; */
-    /* border: 2px solid red; */
+.continer {
+    width: 359px;
+    height: 450px;
+    margin: 8px;
+    /* border: 1px solid red; */
     position: relative;
-    /* overflow: hidden; */
+    overflow: hidden;
 }
-.btn_box {
-    width: 50px;
-    height: 200px;
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    border: 1px solid green;
-    z-index: 20;
-}
-.btn_box button {
-    width: 40px;
-    height: 40px;
-}
-.topo-chart {
-    /* border: 2px solid blue; */
-    height: 100%;
+.echartsContiner {
+    /* height: 450px; */
+    /* width: 100%; */
     position: absolute;
     left: 0;
     top: 0;
-    z-index: 20;
+    /* z-index: 1; */
     zoom: 50%;
+    background: #e5e6e8;
+}
+.main_chart {
+    /* border: 2px solid red; */
+    /* height: 100%; */
+    /* position: absolute; */
+    /* left: 0; */
+    /* top: 0; */
+    /* z-index: 10; */
+    /* zoom: 50%; */
+}
+.offline_chart,
+.online_chart {
+    height: 250px;
+    /* width: 2000px; */
+    /* position: relative; */
+    /* border: 1px solid red; */
+}
+.legend_continer {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    text-align: left;
+    line-height: 20px;
+    /* z-index: 20; */
+}
+.title_row .dot,
+.legend_continer .dot {
+    width: 6px;
+    height: 6px;
+    background: #617cf0;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.title_row .dot {
+    width: 12px;
+    height: 12px;
+    margin: 0 10px 8px 0;
+}
+.echartsContiner .title_text,
+.legend_continer .legend_text {
+    height: 12px;
+    font-size: 12px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #666666;
+    /* line-height: 0px; */
+}
+.echartsContiner .title_text {
+    font-size: 24px;
+    height: 24px;
+}
+.toolbox {
+    position: absolute;
+    right: 0px;
+    top: 200px;
+    /* z-index: 20; */
+    width: 26px;
+    height: 178px;
+    background: #ffffff;
+    border: 1px solid #9e9e9e;
+    border-radius: 4px;
+    padding: 8px 5px 8px 5px;
+}
+.toolbox .split-line {
+    height: 1px;
+    background: #9e9e9e;
+    margin: 8px 0 8px 0;
+}
+.toolbox .toolbox_button {
+    width: 24px;
+}
+.toolbox .toolbox_button .iconStyle {
+    width: 16px;
+    height: 16px;
+    margin: 0 auto;
+    display: block;
+}
+.toolbox .toolbox_button .text {
+    width: 24px;
+    font-size: 12px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+}
+.debug {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    z-index: 1;
+    /* width: 300px; */
+    /* height: 1px; */
+    /* background: #ffffff; */
+    border: 1px solid #9e9e9e;
+    border-radius: 4px;
+    /* padding: 8px 5px 8px 5px; */
+    text-align: right;
+    /* overflow: visible; */
+}
+.debug li {
+    font-size: 14px;
+    color: red;
 }
 </style>

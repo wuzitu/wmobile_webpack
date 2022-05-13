@@ -14,7 +14,7 @@ const brand = defineProps({
     brand: String
 })
 // 默认图片，由于UI未提供，暂以iphone图标代替
-let brandUrl = ref(require("@/frame/assets/img/img_head_iphone@3x.png"))
+let brandUrl = ref(require("@/frame/assets/img/img_head_default@3x.png"))
 watch(() => brand.brand, (newVal) => {
     brandList.map((item,index) => {
         if(newVal == item){

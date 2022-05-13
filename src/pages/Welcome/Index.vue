@@ -1,6 +1,7 @@
 <template>
     <div class="welcome-box">
         <svg-icon class="ic_logo" icon-class="ic_logo"></svg-icon>
+        <p class="logo-text">{{ t("logoText") }}</p>
         <p class="welcome-text">{{ t("WelcomeTxt1") }}</p>
         <p class="welcome-text">{{ t("WelcomeTxt2") }}</p>
         <van-button round type="primary" size="large" color="#617CF0" @click="startUser">{{ t("WelcomeBtn") }}</van-button>
@@ -33,8 +34,11 @@ const startUser = () => {
     .ic_logo {
         width: 141px;
         height: 61px;
-        margin-top: 221px;
-        margin-bottom: 30px;
+        margin-top: 31.5vh;
+    }
+    .logo-text {
+        margin-top: 0;
+        margin-bottom: 6vh;
     }
     .welcome-text {
         width: 145px;
@@ -46,6 +50,6 @@ const startUser = () => {
     }
     :deep(.van-button) {
         width: 290px;
-        margin-top: 220px;
+        margin-top: 31vh;
     }
 </style>

@@ -4,12 +4,12 @@ import DashBoard from "@/pages/Dashboard/Index.vue"
 
 const routes = [
     {
-        path: "/",
+        path: "/Welcome",
         name: "Welcome",
         component: () => import("../pages/Welcome/Index")
     },
     {
-        path: "/DashBoard",
+        path: "/",
         name: "DashBoard",
         component: DashBoard
     },
@@ -35,22 +35,26 @@ const routes = [
     {
         path: "/WiFi",
         name: "WiFi",
-        component: () => import("../pages/WiFi/Index")
+        component: () => import("../pages/WiFi/Index"),
+        props: true
     },
     {
         path: "/AddWiFi",
         name: "AddWiFi",
-        component: () => import("../pages/WiFi/AddWiFi")
+        component: () => import("../pages/WiFi/AddWiFi"),
+        props: true
     },
     {
         path: "/WiFiDetails",
         name: "WiFiDetails",
-        component: () => import("../pages/WiFi/WiFiDetails")
+        component: () => import("../pages/WiFi/WiFiDetails"),
+        props: true
     },
     {
         path: "/EditWiFi",
         name: "EditWiFi",
-        component: () => import("../pages/WiFi/EditWiFi")
+        component: () => import("../pages/WiFi/EditWiFi"),
+        props: true
     },
     {
         path: "/Vlan",
@@ -74,7 +78,7 @@ const routes = [
         component: () => import("../pages/AP/Index")
     },
     {
-        path: "/DevInfo/:devType/:devName",
+        path: "/DevInfo",
         name: "DevInfo",
         component: () => import("../pages/DevInfo/Index"),
         props: true,
@@ -102,12 +106,6 @@ const routes = [
                 props: true
             },
             {
-                path: "PortCard",
-                name: "PortCard",
-                component: () => import("../pages/DevInfo/PortCard"),
-                props: true
-            },
-            {
                 path: "DevDashCard",
                 name: "DevDashCard",
                 component: () => import("../pages/DevInfo/DevdashCard"),
@@ -129,12 +127,6 @@ const routes = [
                 path: "LANCard",
                 name: "LANCard",
                 component: () => import("../pages/DevInfo/LanCard"),
-                props: true
-            },
-            {
-                path: "VLANCard",
-                name: "VLANCard",
-                component: () => import("../pages/DevInfo/VlanCard"),
                 props: true
             }
         ]
@@ -179,14 +171,17 @@ const routes = [
         children:[
             {
                 path: "SysMenu",
+                name: "SysMenu",
                 component: () => import("../pages/System/SysMenu")
             },
             {
                 path: "SysSet",
+                name: "SysSet",
                 component: () => import("../pages/System/SysSet")
             },
             {
                 path: "SysDevice",
+                name: "SysDevice",
                 component: () => import("../pages/System/SysDevice")
             }
         ]
@@ -219,18 +214,8 @@ const routes = [
     {
         path: "/History",
         name: "History",
-        component: () => import("../pages/History/Index")
-    },
-    {
-        path: "/chat",
-        name: "chat",
-        component: () => import("../pages/System/chatsss"),
-        children:[
-            {
-                path: "System",
-                component: () => import("../pages/System/Index")
-            }
-        ]
+        component: () => import("../pages/History/Index"),
+        params: true
     },
     {
         path:"/connectCloudNet",
@@ -245,17 +230,17 @@ const routes = [
             {
                 path: "cloudRegister",
                 component: () => import("../pages/ConnectCloudNet/CloudRegister")
-            },
-            {
-                path: "cloudConfirm",
-                component: () => import("../pages/ConnectCloudNet/CloudConfirm")
+            // },
+            // {
+            //     path: "cloudConfirm",
+            //     component: () => import("../pages/ConnectCloudNet/CloudConfirm")
             }
         ]
     },
     {
-        path: "/History",
-        name: "History",
-        component: () => import("../pages/History/Index")
+        path:"/chat",
+        name:"chat",
+        component: () => import("../pages/System/chatsss")
     }
 ]
 

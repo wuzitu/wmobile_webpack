@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="download-button-box">
-                <van-button round color="#617CF0" class="download-button">{{ RC("download") }}</van-button>
+               <a class="jump-download" href="https://oasis.h3c.com/o2o/app/download.html">{{ RC("download") }}</a>
             </div>
             <div class="copyright-box">
                 <span>
@@ -50,16 +50,16 @@ const RC = (str) => {
     width: 329px;
     height: 613px;
     position: relative;
-    left: 21.5px;
+    left: 22px;
     top: 83px;
 }
 
 .content-title-box {
     width: 248px;
-    height: 65.5px;
+    height: 66px;
     position: relative;
     left: 44px;
-    top: 18.5px;
+    top: 19px;
 }
 
 .content-title-box {
@@ -73,20 +73,33 @@ const RC = (str) => {
     height: 335px;
 }
 .content-title-chinese {
-    font-size: 35.3px;
+    font-size: 35px;
 }
 
 .content-title-english {
     font-size: 20.89px;
     opacity: 0.4;
-    margin-left: 33.5px;
+    margin-left: 34px;
     margin-top: 15px;
 }
 
 .download-button-box {
     position: relative;
-    top: 110.5px;
-    left: 21.5px;
+    top: 111px;
+    left: 22px;
+}
+
+.jump-download{
+    display: inline-block;
+    font-size: 18px;
+    color: #FFFFFF;
+    width: 290px;
+    height: 50px;
+    border-radius: 25px;
+    line-height: 50px;
+    text-align: center;
+    font-family: PingFang-SC-Medium;
+    background-color: #617CF0;
 }
 
 .download-button {
@@ -99,8 +112,8 @@ const RC = (str) => {
     width: 300px;
     height: 39px;
     position: relative;
-    top: 135.5px;
-    left: 26.5px;
+    top: 136px;
+    left: 27px;
 }
 
 .copyright-box span {

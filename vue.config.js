@@ -2,7 +2,9 @@ const path = require("path")
 const resolve = (dir) => path.join(__dirname, dir)
 
 module.exports = {
-    // outputDir: "../wmobile",
+    outputDir: "../wmobile",
+    // 实际设备中，需要"/web/mobile"路径
+    // publicPath: process.env.NODE_ENV === "production" ? "/web/mobile" : "./",
     publicPath: process.env.NODE_ENV === "production" ? "./" : "./",
     filenameHashing: false, // 想要去除生成文件的hash 值，置为false
     lintOnSave: false, // eslint-loader 是否在保存的时候检查
@@ -10,7 +12,7 @@ module.exports = {
     pluginOptions: {
         i18n: {
             locale: "cn",
-            fallbackLocale: "en",
+            fallbackLocale: "cn",
             localeDir: "i18n/locales",
             enableLegacy: false,
             runtimeOnly: false,
@@ -51,7 +53,11 @@ module.exports = {
             "/wnm": {
                 target: "http://192.168.0.141",
                 // ws: true,
-                changeOrigin: true
+                changeOrigin: true,
+                headers: {
+                    Host: "localhost",
+                    Referer: "http://localhost"
+                },
             }
         }
     }, //配置svg icon

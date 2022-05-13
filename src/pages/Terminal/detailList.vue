@@ -4,15 +4,22 @@
             <router-link v-if="typeof key === 'object'" :to="key.url" class="linkStyle">{{ key.name }}</router-link>
             <span v-else>{{ key }}</span>
         </van-cell>
+        <!-- <van-cell :title="item" v-for="item in listTitle"></van-cell> -->
     </div>
 </template>
 
 <script setup>
-import { defineProps } from "vue"
+import { defineProps, onMounted } from "vue"
 import { Cell } from "vant"
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
+// const titleValue = ref(t("Terminal.terminalName"))
 
+// const listTitle = [t("Terminal.terminalName")]
+// const listTitle = [...[t("Terminal.TerminalDetailList")]]
 const listDatas = defineProps({
     listData: Object
+    // listTitle: Array
 })
 </script>
 

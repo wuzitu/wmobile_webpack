@@ -1,7 +1,7 @@
 /* @import "../fonts/font.css"; */
 
 body {
-  font-family: "HPSimplified", Avenir, Helvetica, Arial, sans-serif, "Microsoft YaHei";
+  font-family: Arial,  "Microsoft YaHei";
   overflow: scroll;
   overflow-x: hidden;
   height: 100%;
@@ -10,10 +10,11 @@ body {
 
 * {
   font-size: 14px;
-  font-family: "Microsoft YaHei";
+  font-family: Arial,  "Microsoft YaHei";
 }
 
 #app {
+  font-family: Arial,  "Microsoft YaHei";
   /* font-family: "HPSimplified", Avenir, Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

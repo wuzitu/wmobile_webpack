@@ -2,22 +2,50 @@
     <div class="content">
         <box-title :titleName="t('Wireless.addWifiCfg')"></box-title>
         <form @submit="onSubmit">
-            <field :label="t('Wireless.name')" :placeholder="t('Wireless.wifiNamePlaceholder')" required></field>
-            <field :label="t('Wireless.remarks')" :placeholder="t('Wireless.vlanRemarksPlaceholder')"></field>
+            <field
+                :label="t('Wireless.name')"
+                type="text"
+                :placeholder="t('Wireless.wifiNamePlaceholder')"
+                v-model="wifiName"
+                required
+            ></field>
+            <field
+                :label="t('Wireless.remarks')"
+                type="text"
+                :placeholder="t('Wireless.vlanRemarksPlaceholder')"
+                v-model="wifiRemarks"
+            ></field>
             <van-cell center :title="t('Wireless.wifiEncryption')" required>
                 <template #right-icon>
-                    <Switch v-model="wifiEncryptionChecked" @change="intelligentOptimization" size="24" />
+                    <Switch v-model="wifiEncryptionChecked" size="24" />
                 </template>
             </van-cell>
-            <field :label="t('Wireless.password')" :placeholder="t('Wireless.wifiPwdPlaceholder')" required></field>
+             <div v-show="wifiEncryptionChecked" class="pwd">
+                <password-field
+                    :password="wifiPassword"
+                    :label="t('Wireless.password')"
+                    :placeholder="t('Wireless.wifiPwdPlaceholder')"
+                    @changePassword="wirelessPassword"
+                ></password-field>
+            </div>
+            <!-- <field
+                :label="t('Wireless.password')"
+                :placeholder="t('Wireless.wifiPwdPlaceholder')"
+                required
+            ></field> -->
             <van-cell center :title="t('Wireless.hide')" required>
                 <template #right-icon>
-                    <Switch v-model="wifiHideChecked" @change="intelligentOptimization" size="24" />
+                    <Switch v-model="wifiHideChecked" size="24" />
                 </template>
             </van-cell>
-            <van-cell title="VLAN ID" @click="showPopup" is-link value="2" />
+            <van-cell title="VLAN ID" @click="showPopup" is-link :value="vlanId" />
             <van-popup v-model:show="vlanIDshow" position="bottom" :style="{ height: '50%' }">
-                <picker title="VLAN ID" :columns="columns" default-index="1" @confirm="onConfirm" @cancel="onCancel" @change="onChange"></picker>
+                <picker
+                    :columns="columns"
+                    :default-index="selectedIndex"
+                    @confirm="onConfirm"
+                    @cancel="onCancel"
+                ></picker>
             </van-popup>
             <div class="button-box">
                 <van-button type="default" to="/WiFi">{{ t("Cancel") }}</van-button>
@@ -28,23 +56,32 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, getCurrentInstance } from "vue"
 import { useI18n } from "vue-i18n"
+import { useRouter } from "vue-router"
 import BoxTitle from "@/components/BoxTitle"
 import { Form, Switch, Field, Cell, CellGroup, Popup, Picker, Toast } from "vant"
+import PasswordField from "@/components/PasswordField"
 
 const { t } = useI18n()
+
+const wifiName = ref("")
+const wifiRemarks = ref("")
 const wifiEncryptionChecked = ref(true)
+const wifiPassword = ref("")
 const wifiHideChecked = ref(true)
 const vlanIDshow = ref(false)
+let vlanId = ref("2")
+
 const columns = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+let selectedIndex = ref("4")
+
 const onConfirm = (value, index) => {
-    Toast(`当前值: ${value}, 当前索引: ${index}`)
+    console.log(value)
+    vlanId.value = value
     vlanIDshow.value = false
 }
-const onChange = (value, index) => {
-    Toast(`当前值: ${value}, 当前索引: ${index}`)
-}
+
 const onCancel = () => {
     Toast("取消")
     vlanIDshow.value = false
@@ -52,8 +89,38 @@ const onCancel = () => {
 const showPopup = () => {
     vlanIDshow.value = true
 }
-const onSubmit = (values) => {
+
+const { proxy } = getCurrentInstance()
+const $req = proxy.$req
+const router = useRouter()
+const onSubmit = async (values) => {
     console.log("submit", values)
+    let aRequest = []
+    let oTemplate = $req.getTableInstance("GlobalServiceTemplates")
+    //获取wifi数据
+    let oWifiData = {
+        Name : wifiName.value,
+        SSID : wifiName.value,
+        PskPassPhraseKey : wifiPassword.value,
+        HideSsid : wifiHideChecked.value,
+        DefaultVlan : vlanId.value
+    }
+    console.log(oWifiData)
+    oTemplate.addRows(oWifiData)
+    aRequest.push(oTemplate)
+    let response = await $req.set("create", aRequest)
+    //假数据
+    router.push({
+        name:"WiFi",
+        params:{
+            name : wifiName.value,
+            remarks : wifiRemarks.value,
+            encryption :"是",
+            hideStatus : wifiHideChecked.value == true ? "隐藏" : "显示",
+            vlanId : vlanId.value,
+            componentName : "AddWiFi"
+        }
+    })
     Toast("提交")
 }
 </script>

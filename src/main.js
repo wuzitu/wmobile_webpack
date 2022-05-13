@@ -22,7 +22,10 @@ import {
     DatetimePicker,
     Divider,
     Checkbox,
-    CheckboxGroup
+    CheckboxGroup,
+    Form,
+    Field,
+    Dialog
 } from "vant"
 import App from "./App.vue"
 import axios from "axios" // ajax
@@ -65,6 +68,9 @@ app.use(DatetimePicker)
 app.use(Divider)
 app.use(Checkbox)
 app.use(CheckboxGroup)
+app.use(Form)
+app.use(Field)
+app.use(Dialog)
 /* 定义全局变量 */
 app.config.globalProperties.$axios = axios
 app.config.globalProperties.$req = $req

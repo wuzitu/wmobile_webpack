@@ -69,16 +69,18 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import { useI18n } from "vue-i18n"
 import { Field } from "vant"
 import SelectPicker from "./SelectPicker"
 import PasswordField from "./PasswordField"
 import MultiInput from "./MultiInput"
+import InterfaceType from "../frame/utils/InterfaceType/InterfaceType"
+
 const { t } = useI18n()
 const typeList = ref(["DHCP", "PPPoE", t("Network.staticNet")])
 const userName = ref("")
-const password = ref("123")
+const password = ref("")
 const IPv4Address = ref("")
 const netmask = ref("")
 const gateway = ref("")
@@ -135,22 +137,31 @@ if (props.selectedType == "PPPoE") {
 let selectedInterface = ref(props.selectedInterface)
 let selectedType = ref(props.selectedType)
 
+// 接收子组件端口
 const userInterface = (e) => {
     selectedInterface.value = e
 }
 
+// 接收子组件上网方式
 const userType = (e) => {
     selectedType.value = e
 }
 
+// 接收子组件pppoe password
 const pppoePassword = (e) => {
     password.value = e
 }
 
+// 获取子组件dns数据
 const multiDns = ref()
 const getDns = () => {
     return multiDns.value.returnData()
 }
+
+onMounted(async() => {
+    const interfaceData = InterfaceType.initInterface()
+    console.log(interfaceData)
+})
 
 const returnData = () => {
     const data = {
@@ -159,10 +170,17 @@ const returnData = () => {
         config: {}
     }
 
-    if (data.type.value == "PPPoE") {
+    if (data.type.value == "DHCP") {
+        // const dataInterface = InterfaceType.dhcpData
+        // console.log(dataInterface)
+    } else if (data.type.value == "PPPoE") {
+        // const dataInterface = InterfaceType.pppoeData(userName, password)
+        // console.log(dataInterface)
         data.config.userName = userName
         data.config.password = password
     } else if (data.type.value == t("Network.staticNet")) {
+        // const dataInterface = InterfaceType.staticIPData(IPv4Address, netmask, gateway, getDns())
+        // console.log(dataInterface)
         data.config.IPv4Address = IPv4Address
         data.config.netmask = netmask
         data.config.gateway = gateway

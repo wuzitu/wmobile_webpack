@@ -3,7 +3,7 @@
         <span @click="ondropControl">{{ seletctedVal }}</span>
         <svg-icon :icon-class="icontoggle" class="icondown" @click="ondropControl"></svg-icon>
         <div :class="controlList" class="listSty">
-            <div v-for="(item, index) in selectOptions" @click="selectDrop(item, index)">{{ item }}</div>
+            <div v-for="(item, index) in selectOptions" @click="selectDrop(item, index)" :class="item == seletctedVal ? 'selected' : 'noselected'">{{ item }}</div>
         </div>
     </span>
 </template>
@@ -34,6 +34,9 @@ const selectDrop = (item, index) => {
 }
 </script>
 <style scope>
+.selected {
+    display: none;
+}
 .icondown {
     width: 14px;
     height: 14px;
@@ -50,13 +53,15 @@ const selectDrop = (item, index) => {
 }
 .listSty {
     position: absolute;
-    top: 30px;
+    /* top: 30px; */
     left: 0px;
     z-index: 10;
     background: #fff;
     border: 1px solid #f7f7f7;
 }
 .listSty > div {
+    height: 30px;
+    line-height: 30px;
     border-bottom: 1px solid #f7f7f7;
 }
 </style>

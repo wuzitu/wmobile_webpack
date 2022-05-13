@@ -4,25 +4,21 @@
         <div class="chartContiner">
             <div class="legend_continer">
                 <div class="legend_row">
-                    <van-icon name="circle" style="color: red; font-weight: bold" />
+                    <span class="dot"></span>
                     <span>{{ ONLINE + GatewayNum }}</span>
                 </div>
                 <div class="legend_row">
-                    <van-icon name="circle" style="color: black; font-weight: bold" />
+                    <span class="dot"></span>
                     <span>{{ OFFLINE + SwitchNum }}</span>
                 </div>
-                <!-- <div class="legend_row">
-                    <van-icon name="circle" style="color: blue; font-weight: bold" />
-                    <span>{{ AP " + APNum }}</span>
-                </div> -->
             </div>
             <div class="toolbox">
-                <div class="toolbox_button" type="primary" @click="gotoDetail">
+                <div class="toolbox_button" @click="gotoDetail">
                     <svg-icon icon-class="ic_detail" class="iconStyle"></svg-icon>
                     <span class="text">详图</span>
                 </div>
                 <div class="split-line"></div>
-                <div class="toolbox_button" type="primary" @click="onRefresh">
+                <div class="toolbox_button" @click="onRefresh">
                     <svg-icon icon-class="ic_refresh" class="iconStyle"></svg-icon>
                     <span class="text">刷新</span>
                 </div>
@@ -77,7 +73,6 @@ const onRefresh = () => {
 
 let GatewayNum = 20
 let SwitchNum = 10
-let APNum = 5
 
 const X1 = 147 //左侧cloud
 const X2 = 230 //右侧internet
@@ -93,6 +88,7 @@ const Y6 = 353 //第5行Y坐标
 let graphData = [
     {
         name: "Cloud",
+        nodeType: "root",
         symbol: "image://" + CloudImg,
         value: [X1, Y1], //使用2d坐标系的时候，要用value的形式，不能用x y
         symbolSize: [53, 58]
@@ -100,6 +96,7 @@ let graphData = [
     {
         name: "Internet",
         value: [X2, Y1],
+        nodeType: "root",
         label: {
             show: true,
             position: [-23.5, -29.5],
@@ -130,30 +127,113 @@ let graphData = [
         text: GATEWAY,
         symbol: "image://" + GatewayImg,
         value: [X3, Y3],
-        symbolSize: [76, 34]
+        symbolSize: [76, 34],
+        online: 2,
+        total: 5
     },
     {
         name: "Switch",
         text: SWITCH,
         symbol: "image://" + SwitchImg,
         value: [X3, Y4],
-        symbolSize: [76, 23]
+        symbolSize: [76, 23],
+        online: 1,
+        total: 3
     },
     {
         name: "AP",
         text: AP,
         symbol: "image://" + APImg,
         value: [X3, Y5],
-        symbolSize: [40, 40]
+        symbolSize: [40, 40],
+        online: 20,
+        total: 50
     },
     {
         name: "Client",
         text: CLIENT,
         symbol: "image://" + ClientImg,
         value: [X3, Y6],
-        symbolSize: [21, 40]
+        symbolSize: [21, 40],
+        total: 500,
+        nodeType: "client"
     }
 ]
+
+graphData.forEach(function (oNode, index) {
+    if ("root" == oNode.nodeType) {
+        return
+    } else if ("client" == oNode.nodeType) {
+        oNode.label = {
+            show: true,
+            position: [0, -8],
+            width: oNode.symbolSize[0],
+            formatter: "{WhiteSpace1|}{CountNum|" + oNode.total + "}\n{Type|" + oNode.text + "}",
+            rich: {
+                WhiteSpace1: {
+                    width: oNode.symbolSize[0] //根据图标尺寸进行计算
+                },
+                CountNum: {
+                    align: "center",
+                    verticalAlign: "top",
+                    width: 32,
+                    height: 13,
+                    fontSize: 10,
+                    fontFamily: "PingFang SC",
+                    fontWeight: 500,
+                    color: "#FFFFFF",
+                    backgroundColor: "#617CF0",
+                    borderRadius: 8,
+                    padding: [2, 0, 0, 0], //微调文字，使其上下居中
+                    lineHeight: oNode.symbolSize[1] + 13 //根据图标尺寸进行计算
+                },
+                Type: {
+                    align: "center",
+                    // width:oNode.symbolSize[0],
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: "#666666",
+                    fontFamily: "PingFang SC"
+                }
+            }
+        }
+    } else {
+        oNode.label = {
+            show: true,
+            position: [0, -8],
+            width: oNode.symbolSize[0],
+            formatter: "{WhiteSpace1|}{CountNum|" + oNode.online + "/" + oNode.total + "}\n{Type|" + oNode.text + "}",
+            rich: {
+                WhiteSpace1: {
+                    width: oNode.symbolSize[0] //根据图标尺寸进行计算
+                },
+                CountNum: {
+                    align: "center",
+                    verticalAlign: "top",
+                    width: 32,
+                    height: 13,
+                    fontSize: 10,
+                    fontFamily: "PingFang SC",
+                    fontWeight: 500,
+                    color: "#FFFFFF",
+                    backgroundColor: "#617CF0",
+                    borderRadius: 8,
+                    padding: [2, 0, 0, 0],
+                    lineHeight: oNode.symbolSize[1] + 13 //根据图标尺寸进行计算
+                },
+                Type: {
+                    align: "center",
+                    // width:oNode.symbolSize[0],
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: "#666666",
+                    fontFamily: "PingFang SC"
+                }
+            }
+        }
+    }
+})
+
 let linksData = [
     {
         coords: [
@@ -187,8 +267,14 @@ let linksData = [
     },
     {
         coords: [
-            [X3, Y4 + 40],
+            [X3, Y4 + 35],
             [X3, Y5 - 30]
+        ]
+    },
+    {
+        coords: [
+            [X3, Y5 + 40],
+            [X3, Y6 - 30]
         ]
     }
 ]
@@ -230,51 +316,22 @@ let option = ref({
             name: "TopologyChart",
             type: "graph",
             animation: false,
-            // layout: 'none',
             coordinateSystem: "cartesian2d", //使用二维的直角坐标系
             roma: false,
-            // zoom:1,
             zlevel: 2,
             data: graphData,
             links: [],
-            // symbolKeepAspect: true,
             emphasis: {
                 itemStyle: {
                     shadowBlur: 10,
                     shadowOffsetX: 0,
                     shadowColor: "rgba(0, 0, 0, 0.5)"
                 }
-            },
-            label: {
-                show: true,
-                // position: "insideTopRight",
-                // offset: [10, -15],
-                // color: "#fff",
-                // fontSize: 10,
-                // backgroundColor: "rgba(78, 144, 249, 1)",
-                // borderRadius: 8,
-                // padding: 3,
-                // lineHeight: 12,
-                // formatter: function () {
-                //     return "10/30"
-                // }
-                position: "bottom",
-                // offset: [10, -15],
-                color: "#666666",
-                fontSize: 12,
-                // backgroundColor: "rgba(78, 144, 249, 1)",
-                borderRadius: 8,
-                // padding: 3,
-                // lineHeight: 12,
-                formatter: function (params) {
-                    return params.data.text || ""
-                }
             }
         },
         {
             name: "Lines",
             type: "lines",
-            // polyline: true,
             coordinateSystem: "cartesian2d",
             zlevel: 1,
             lineStyle: {
@@ -286,7 +343,7 @@ let option = ref({
         }
     ]
 })
-// console.log(option)
+console.log(option)
 </script>
 
 <style scoped>
@@ -299,10 +356,8 @@ let option = ref({
     font-weight: 60px;
     background: #ffffff;
     margin: 15px;
-    /* border: 1px solid red; */
 }
 .legend_continer {
-    /* border: 1px solid green; */
     width: 100px;
     height: 100px;
     position: absolute;
@@ -310,11 +365,20 @@ let option = ref({
     line-height: 20px;
     z-index: 999;
 }
+.legend_continer .dot {
+    width: 6px;
+    height: 6px;
+    background: #00af6d;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
 .toolbox {
     position: absolute;
     right: 0px;
     bottom: 0px;
-    z-index: 999;
+    z-index: 10;
     width: 24px;
     height: 76px;
     background: #ffffff;
@@ -323,27 +387,27 @@ let option = ref({
     padding: 8px 5px 8px 5px;
 }
 .toolbox .split-line {
-    /* width: 24px; */
     height: 1px;
     background: #9e9e9e;
     margin: 5px 0 5px 0;
 }
 .toolbox .toolbox_button {
     width: 24px;
-    position: relative;
 }
 .toolbox .toolbox_button .iconStyle {
     width: 16px;
     height: 16px;
-    margin: 0 0 0 0;
+    margin: 0 auto;
+    display: block;
 }
 .toolbox .toolbox_button .text {
     width: 24px;
-    height: 12px;
     font-size: 12px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
     text-align: center;
+    margin: 0 auto;
+    display: block;
 }
 </style>

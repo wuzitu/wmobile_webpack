@@ -31,9 +31,31 @@ const oRequest = {
     rollbackCfg: rollbackCfg,
     sendCli: sendCli,
     sendUrl: sendUrl,
-    clearMoudleAjax: clearMoudleAjax
+    clearMoudleAjax: clearMoudleAjax,
+    makeGetChannelXml:makeGetChannelXml,//get xml编码
+    makeEditChannelXml:makeEditChannelXml,//edit xml编码
+    decodingXmltoJson:decodingXmltoJson//将XmlResponse解码为xml，将xml转json
 }
-
+function decodingXmltoJson(param){//param:XmlResponse字段对应的值
+    let x2js = require("x2js")
+    let x2jsone = new x2js()
+    let sXml = window.atob(param)
+    let jsonObj = x2jsone.xml2js(sXml)
+    let newjsonObj = jsonObj["Envelope"]["Body"]["rpc-reply"]["data"]["top"]
+    return newjsonObj
+}
+function makeGetChannelXml(sAction, aTables, oCount) { //sAction：get get-bulk ...
+    let sXml = makeGetXml(sAction, aTables, oCount)
+    sXml = "<rpc message-id='101' xmlns='urn:ietf:params:xml:ns:netconf:base:1.0'  xmlns:web='urn:ietf:params:xml:ns:netconf:base:1.0'>" + sXml + "</rpc>"
+    sXml = window.btoa(sXml)
+    return sXml
+}
+function makeEditChannelXml(sAction, aTables, sType, bErrorContinue) {//sAction:edit-config
+    let sXml = makeEditXml(sAction, aTables, sType, bErrorContinue)
+    sXml = "<rpc message-id='101' xmlns='urn:ietf:params:xml:ns:netconf:base:1.0'  xmlns:web='urn:ietf:params:xml:ns:netconf:base:1.0'>" + sXml + "</rpc>"
+    sXml = window.btoa(sXml)
+    return sXml
+}
 function sendUrl(sUrl, pfOnSuccess, pfOnFailed) {
     let opt = {
         onSuccess: pfOnSuccess,
@@ -419,8 +441,8 @@ function getRpcErr(aErrs) {
 
 function sendRequest(sUrl, sXml, oPara) {
     return new Promise((resolve, reject) => {
-    // 调试用本地数据
-        if (process.env.VUE_APP_LOCALDEBUG) {
+        // 调试用本地数据
+        if (process.env.VUE_APP_LOCALDEBUG == "true") {
             resolve(tmpJson)
             return
         }
@@ -495,7 +517,7 @@ function sendRequest(sUrl, sXml, oPara) {
             method: "POST",
             data: postData,
             headers: {
-                Authorization: process.env.VUE_APP_SESSIONID + "=true",
+                // Authorization: process.env.VUE_APP_SESSIONID + "=true",
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
             }
         }
