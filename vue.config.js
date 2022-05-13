@@ -2,7 +2,7 @@ const path = require("path")
 const resolve = (dir) => path.join(__dirname, dir)
 
 module.exports = {
-    outputDir: "../wmobile",
+    // outputDir: "../wmobile",
     // 实际设备中，需要"/web/mobile"路径
     // publicPath: process.env.NODE_ENV === "production" ? "/web/mobile" : "./",
     publicPath: process.env.NODE_ENV === "production" ? "./" : "./",
